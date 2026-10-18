@@ -1,0 +1,1487 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>180 ♥ 175</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
+<style>
+  /* Layout: one sketchbook page taped to a desk; the animation is the hero, caption + controls sit under it. Single deliberate look in both themes. */
+  :root {
+    --desk: #dfe6ef;
+    --paper: #f7f9fc;
+    --ink: #22304a;
+    --ink-soft: #5a6884;
+    --pink: #e5567f;
+    --tape: rgba(229, 86, 127, .28);
+    --hand: "LXGW WenKai TC", "Kaiti TC", "BiauKai", "STKaiti", "KaiTi", serif;
+  }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--desk); color: var(--ink); }
+  body { font-family: var(--hand); padding-inline: 16px; padding-block: 28px 40px; }
+  .wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 30px; font-weight: 700; letter-spacing: .04em; text-wrap: balance; }
+  h1 .h { color: var(--pink); }
+  header p { margin: 0; color: var(--ink-soft); font-size: 15px; }
+  .page { position: relative; background: var(--paper); border: 2px solid var(--ink); border-radius: 4px; box-shadow: 6px 6px 0 rgba(34, 48, 74, .18); }
+  .page::before, .page::after { content: ""; position: absolute; top: -12px; width: 86px; height: 24px; background: var(--tape); }
+  .page::before { left: 22px; transform: rotate(-4deg); }
+  .page::after { right: 22px; transform: rotate(5deg); }
+  canvas { display: block; width: 100%; aspect-ratio: 16 / 10; cursor: pointer; border-radius: 3px; }
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  button { font-family: var(--hand); font-size: 17px; color: var(--ink); background: var(--paper); border: 2px solid var(--ink); border-radius: 999px; padding: 8px 20px; cursor: pointer; box-shadow: 3px 3px 0 rgba(34, 48, 74, .2); }
+  button:hover { background: #fff; }
+  button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 rgba(34, 48, 74, .2); }
+  button:disabled { opacity: .35; cursor: default; }
+  .act { display: flex; justify-content: center; }
+  #eat, #shoot, #walk { background: var(--pink); border-color: var(--ink); color: #fff; font-weight: 700; font-size: 19px; padding: 10px 26px; }
+  #eat:hover, #shoot:hover, #walk:hover { background: #d9466f; }
+  #eat:disabled, #shoot:disabled, #walk:disabled { opacity: 1; background: var(--paper); color: var(--ink); }
+  #next.pulse { background: var(--pink); color: #fff; animation: nudge 1.2s ease-in-out infinite; }
+  @keyframes nudge { 50% { transform: translateX(5px); } }
+  button:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
+  .dots { display: flex; gap: 10px; }
+  .dots span { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--ink); }
+  .dots span.on { background: var(--pink); border-color: var(--pink); }
+
+  /* ending: the application form */
+  :root { --seal: #c8283c; }
+  .form { position: relative; overflow: hidden; padding: clamp(20px, 5vw, 44px) clamp(16px, 5vw, 48px); display: flex; flex-direction: column; gap: 14px; }
+  .doc-no { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--ink-soft); letter-spacing: .06em; }
+  .form h2 { margin: 0; text-align: center; font-size: clamp(30px, 6vw, 44px); letter-spacing: .5em; padding-left: .5em; font-weight: 700; }
+  .table-wrap { overflow-x: auto; }
+  .form table { width: 100%; border-collapse: collapse; font-size: clamp(16px, 2.6vw, 19px); border: 2.5px solid var(--ink); }
+  .form th, .form td { border: 1.5px solid var(--ink); padding: 10px 12px; text-align: left; vertical-align: middle; }
+  .form th { width: 6.5em; white-space: nowrap; font-weight: 700; letter-spacing: .3em; background: rgba(34, 48, 74, .05); }
+  .form td.reason { height: 130px; background: repeating-linear-gradient(transparent 0 31px, rgba(34, 48, 74, .18) 31px 32px); }
+  .decide { display: flex; gap: 14px; flex-wrap: wrap; }
+  .decide button { min-width: 7em; font-weight: 700; }
+  .decide .approve { background: var(--seal); color: #fff; }
+  .decide .approve:hover { background: #b01f33; }
+  #result { font-weight: 700; color: var(--seal); }
+  .sign { display: flex; justify-content: flex-end; gap: 24px; flex-wrap: wrap; font-size: 16px; }
+  .stamp { position: absolute; right: 9%; bottom: 13%; width: 116px; height: 116px; border: 5px solid var(--seal); border-radius: 50%; color: var(--seal); display: grid; place-items: center; font-size: 38px; font-weight: 700; letter-spacing: .1em; box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 6px var(--seal); transform: rotate(-14deg); opacity: .88; mix-blend-mode: multiply; pointer-events: none; }
+  .stamp.in { animation: stamp .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+  @keyframes stamp { from { transform: rotate(-14deg) scale(2.6); opacity: 0; } to { transform: rotate(-14deg) scale(1); opacity: .88; } }
+  .fly { position: absolute; bottom: -30px; color: var(--pink); pointer-events: none; animation: fly 2.8s ease-out forwards; }
+  @keyframes fly { to { transform: translate(var(--dx), -520px) rotate(var(--r)); opacity: 0; } }
+  /* after approval: fake "sent" notice, then the reveal, then a tiny epilogue */
+  .mail { border-top: 2px dashed rgba(34, 48, 74, .35); padding-top: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  .mail .status { font-size: clamp(18px, 3vw, 22px); font-weight: 700; }
+  .mail .status.ok { color: #2f8a52; }
+  .mail .when { font-size: 15px; color: #5a6884; }
+  .bar { width: min(320px, 100%); height: 12px; border: 2px solid var(--ink); border-radius: 8px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--pink); transition: width 2.2s ease-out; }
+  .mail .fine { font-size: clamp(15px, 2.4vw, 17px); color: var(--seal); font-weight: 700; }
+  .mail canvas { width: 100%; aspect-ratio: 800 / 220; display: block; border-radius: 10px; }
+  .appear { animation: appear .6s ease-out both; }
+  @keyframes appear { from { opacity: 0; transform: translateY(8px); } }
+  @media (prefers-reduced-motion: reduce) { .stamp.in, .fly, .appear { animation: none; } .fly { display: none; } .bar i { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>180 <span class="h">♥</span> 175</h1>
+  </header>
+  <div class="page">
+    <canvas id="c" aria-label="火柴人動畫"></canvas>
+    <div class="form" id="form" hidden>
+      <div class="doc-no"><span>文號：180 字第 175 號</span><span>速別：最速件</span></div>
+      <h2>申請書</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>申請人</th><td>180</td><th>受理人</th><td>175</td></tr>
+          <tr><th>申請日期</th><td colspan="3" id="date"></td></tr>
+          <tr><th>主旨</th><td colspan="3"><strong>申請與 175 正式交往，請惠予核准。</strong></td></tr>
+          <tr><th>檢附資料</th><td colspan="3">壽司七盤、電影一場、投籃機 <span id="hoopScore">0</span> 分、焙茶銀河流沙巧克力裂縫一個、尿急一次、主的訊息 <span id="msgCount">0</span> 則、鯛魚燒一份、論文一份（希望）</td></tr>
+          <tr><th>審核結果</th><td colspan="3">
+            <div class="decide" id="decide"><button id="yes" class="approve" type="button">核准</button><button id="no" type="button">駁回</button></div>
+            <span id="result" hidden>核准。即日起生效。</span>
+          </td></tr>
+        </table>
+      </div>
+      <div class="sign"><span>申請人簽章：180</span><span>受理人簽章：175</span></div>
+      <div class="stamp" id="stamp" hidden>核准</div>
+      <div class="mail" id="mail" hidden>
+        <div class="status" id="mailStatus">公文傳送中……</div>
+        <div class="bar" id="mailBar"><i></i></div>
+        <div class="when" id="mailWhen" hidden></div>
+        <div class="fine appear" id="mailFine" hidden>（騙你的，網頁寄不出去。請截圖傳給 180 🙏）</div>
+        <canvas class="appear" id="epi" hidden></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="act" id="act" hidden><button id="eat" type="button"></button><button id="shoot" type="button" hidden></button><button id="walk" type="button" hidden>散步 👣</button></div>
+  <nav>
+    <button id="prev" type="button">← 上一幕</button>
+    <div class="dots" id="dots"></div>
+    <button id="next" type="button">下一幕 →</button>
+  </nav>
+</div>
+
+<script>
+const INK = '#22304a', PAPER = '#f7f9fc', GRID = '#dde6f2', PINK = '#e5567f', SALMON = '#f28c5b';
+const c = document.getElementById('c');
+let ctx = c.getContext('2d');
+const W = 800, H = 500;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function resize() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  c.width = c.clientWidth * dpr; c.height = c.clientWidth * 0.625 * dpr;
+  ctx.setTransform(c.width / W, 0, 0, c.height / H, 0, 0);
+}
+addEventListener('resize', resize);
+
+// ---------- helpers ----------
+const lerp = (a, b, k) => a + (b - a) * k;
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const ease = k => { k = clamp(k); return k * k * (3 - 2 * k); };
+const lerpPose = (p, q, k) => [lerp(p[0], q[0], k), lerp(p[1], q[1], k)];
+const crossed = (prev, now, period, mark) => Math.floor((prev - mark) / period) < Math.floor((now - mark) / period);
+
+function limb(st, [a1, a2], l1, l2, f) {
+  const p1 = { x: st.x + Math.sin(a1) * l1 * f, y: st.y + Math.cos(a1) * l1 };
+  const a = a1 + a2;
+  return { p0: st, p1, p2: { x: p1.x + Math.sin(a) * l2 * f, y: p1.y + Math.cos(a) * l2 }, a };
+}
+
+const ARM_REST = [0.15, 0.1], LEG_F = [0.14, 0], LEG_B = [-0.14, 0];
+const SIT_F = [1.5, -1.45], SIT_B = [1.42, -1.38];
+
+function geo(o) {
+  const f = o.f || 1, s = o.s || 1, lean = o.lean || 0, bob = o.bob || 0;
+  const N = { x: Math.sin(lean) * 58 * f, y: -Math.cos(lean) * 58 };
+  const S = { x: N.x * 0.9, y: N.y + 6 };
+  const Hd = { x: N.x + Math.sin(lean) * 17 * f, y: N.y - 17 };
+  return {
+    f, s, N, S, Hd,
+    armF: limb(S, o.armF || ARM_REST, 26, 24, f),
+    armB: limb(S, o.armB || [-0.15, 0.1], 26, 24, f),
+    legF: limb({ x: 0, y: 0 }, o.legF || LEG_F, 32, 32, f),
+    legB: limb({ x: 0, y: 0 }, o.legB || LEG_B, 32, 32, f),
+    abs: p => ({ x: o.x + p.x * s, y: o.y + bob + p.y * s }),
+  };
+}
+
+function path(l) { ctx.beginPath(); ctx.moveTo(l.p0.x, l.p0.y); ctx.lineTo(l.p1.x, l.p1.y); ctx.lineTo(l.p2.x, l.p2.y); ctx.stroke(); }
+
+function drawHead(x, y, f, o) {
+  const r = 15, col = o.col || INK;
+  ctx.fillStyle = col;
+  if (o.hair) { // long hair falling behind
+    ctx.beginPath();
+    ctx.moveTo(x, y - r - 4);
+    ctx.quadraticCurveTo(x - f * (r + 10), y - 6, x - f * (r + 7), y + 34);
+    ctx.lineTo(x - f * 2, y + 30);
+    ctx.lineTo(x + f * 6, y + 10);
+    ctx.closePath(); ctx.fill();
+  }
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = o.face || PAPER; ctx.fill(); ctx.stroke();
+  if (o.hair) { // fringe
+    ctx.fillStyle = col; ctx.beginPath();
+    ctx.arc(x, y, r + 3, Math.PI, Math.PI * 2);
+    ctx.quadraticCurveTo(x + f * 4, y - 15, x - r - 3, y);
+    ctx.fill();
+  }
+  const ex1 = x + f * 1.5, ex2 = x + f * 10, ey = y - 1;
+  if (o.glasses) {
+    ctx.save(); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(ex1, ey, 4.3, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(ex2, ey, 4.3, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex1 + f * 4.3, ey); ctx.lineTo(ex2 - f * 4.3, ey); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ex1 - f * 4.3, ey); ctx.lineTo(x - f * 12, y - 3); ctx.stroke();
+    ctx.restore();
+  }
+  ctx.fillStyle = col;
+  ctx.save(); ctx.lineWidth = 2;
+  if (o.laugh) {
+    for (const ex of [ex1, ex2]) { ctx.beginPath(); ctx.moveTo(ex - 2.5, ey + 1); ctx.lineTo(ex, ey - 2); ctx.lineTo(ex + 2.5, ey + 1); ctx.stroke(); }
+    ctx.beginPath(); ctx.arc(x + f * 6, y + 4, 5, 0, Math.PI); ctx.closePath(); ctx.fill();
+  } else {
+    for (const ex of [ex1, ex2]) { ctx.beginPath(); ctx.arc(ex, ey, 1.6, 0, Math.PI * 2); ctx.fill(); }
+    if (o.sad) { ctx.beginPath(); ctx.arc(x + f * 6, y + 10, 4, 1.15 * Math.PI, 1.85 * Math.PI); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(x + f * 6, y + 5, 4, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke(); }
+  }
+  ctx.restore();
+  if (o.blush) {
+    ctx.save(); ctx.globalAlpha = 0.55 * o.blush; ctx.fillStyle = PINK;
+    for (const bx of [x - f * 3, x + f * 13]) { ctx.beginPath(); ctx.ellipse(bx, y + 4, 3.5, 2.2, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
+  }
+}
+
+function person(o) {
+  const g = geo(o);
+  ctx.save();
+  ctx.translate(o.x, o.y + (o.bob || 0)); ctx.scale(g.s, g.s);
+  ctx.strokeStyle = o.col || INK; ctx.lineWidth = 3.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.globalAlpha = 0.45; path(g.legB); path(g.armB); ctx.globalAlpha = 1;
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(g.N.x, g.N.y); ctx.stroke();
+  path(g.legF); path(g.armF);
+  if (o.prop) o.prop(g.armF.p2, g.armF.a, g.f);
+  drawHead(g.Hd.x, g.Hd.y, o.hf || g.f, o);
+  ctx.restore();
+  return g.abs(g.armF.p2);
+}
+
+function heartPath(x, y, s) {
+  ctx.beginPath();
+  ctx.moveTo(x, y + s / 4);
+  ctx.bezierCurveTo(x, y, x - s / 2, y, x - s / 2, y + s / 4);
+  ctx.bezierCurveTo(x - s / 2, y + s / 2, x, y + s * 0.65, x, y + s * 0.85);
+  ctx.bezierCurveTo(x, y + s * 0.65, x + s / 2, y + s / 2, x + s / 2, y + s / 4);
+  ctx.bezierCurveTo(x + s / 2, y, x, y, x, y + s / 4);
+}
+
+// floating particles (hearts and "+2")
+let parts = [];
+function spawn(x, y, n = 1, kind = 'heart', spread = 1, col = PINK) {
+  for (let i = 0; i < n; i++) parts.push({
+    x, y, kind, col, life: 0, max: 1.8 + Math.random() * 0.6,
+    vx: (Math.random() - 0.5) * 50 * spread, vy: -40 - Math.random() * 30, size: 14 + Math.random() * 10,
+  });
+}
+function drawParts(dt) {
+  parts = parts.filter(p => (p.life += dt) < p.max);
+  for (const p of parts) {
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.97;
+    ctx.save(); ctx.globalAlpha = 1 - p.life / p.max;
+    if (p.kind === 'heart') { heartPath(p.x, p.y, p.size); ctx.fillStyle = PINK; ctx.fill(); }
+    else { ctx.fillStyle = p.col; ctx.font = '700 26px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText(p.kind, p.x, p.y); }
+    ctx.restore();
+  }
+}
+
+function paper(margin = true) {
+  ctx.fillStyle = PAPER; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = GRID; ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 25; x < W; x += 25) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+  for (let y = 25; y < H; y += 25) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  ctx.stroke();
+  if (margin) { ctx.strokeStyle = 'rgba(229,86,127,.35)'; ctx.beginPath(); ctx.moveTo(48, 0); ctx.lineTo(48, H); ctx.stroke(); }
+}
+function line(x1, y1, x2, y2, w = 3, col = INK) { ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+
+// ---------- scene 0: cover ----------
+function sceneCover(t, prev) {
+  paper();
+  ctx.fillStyle = INK; ctx.textAlign = 'center';
+  ctx.font = '700 76px "LXGW WenKai TC", serif';
+  ctx.fillText('180', 300, 150); ctx.fillText('175', 500, 150);
+  const pulse = 1 + 0.12 * Math.sin(t * 5);
+  heartPath(400, 102 - 18 * pulse, 40 * pulse); ctx.fillStyle = PINK; ctx.fill();
+  ctx.font = '22px "LXGW WenKai TC", serif'; ctx.fillStyle = '#5a6884';
+  ctx.fillText('正式申請書', 400, 200);
+  line(120, 424, 680, 424, 2.5);
+  for (let x = 140; x < 680; x += 46) { line(x, 424, x - 4, 416, 1.5); line(x + 6, 424, x + 8, 417, 1.5); }
+  const wave = [2.7 + 0.35 * Math.sin(t * 7), 0.5];
+  person({ x: 340, y: 360, f: 1, glasses: true, bob: -Math.abs(Math.sin(t * 3)) * 4, armF: wave });
+  person({ x: 460, y: 360, f: -1, hair: true, bob: -Math.abs(Math.sin(t * 3 + 1)) * 4, armF: [2.7 + 0.35 * Math.sin(t * 7 + 1), 0.5] });
+  if (crossed(prev, t, 1.4, 0.2)) spawn(400, 300, 1);
+}
+
+// ---------- scene 1: sushi ----------
+const PLATES = ['#3d7bd9', '#e04b4b', '#e2b23c', '#4aa86b', '#9a6bd1'];
+function sushi(x, y, col) {
+  ctx.lineWidth = 2; ctx.strokeStyle = INK;
+  ctx.beginPath(); ctx.ellipse(x, y, 24, 6.5, 0, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(x, y, 24, 6.5, 0, 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.strokeStyle = INK; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(x - 14, y - 15, 28, 11, 5); ctx.fillStyle = '#fff'; ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(x - 16, y - 21, 32, 8, 4); ctx.fillStyle = SALMON; ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+  for (const dx of [-8, 0, 8]) { ctx.beginPath(); ctx.moveTo(x + dx - 2, y - 19); ctx.lineTo(x + dx + 3, y - 15); ctx.stroke(); }
+}
+function stack(x, y, n) {
+  for (let i = 0; i < n; i++) {
+    ctx.beginPath(); ctx.ellipse(x, y - i * 5, 18, 5, 0, 0, Math.PI * 2);
+    ctx.fillStyle = PLATES[i % PLATES.length]; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 1.6; ctx.stroke();
+  }
+}
+const chopsticks = (h, a, f) => {
+  ctx.save(); ctx.strokeStyle = '#8a5a3c'; ctx.lineWidth = 2;
+  const dx = Math.sin(a) * f, dy = Math.cos(a);
+  for (const o of [-2, 2]) { ctx.beginPath(); ctx.moveTo(h.x + o * dy, h.y - o * dx); ctx.lineTo(h.x + dx * 24, h.y + dy * 24 + o); ctx.stroke(); }
+  ctx.restore();
+};
+const SUSHI_MAX = 7, EAT_TIME = 1.3;
+const meal = { count: 0, eatAt: -99 };
+function sceneSushi(t, prev) {
+  sceneDone = meal.count >= SUSHI_MAX && t - meal.eatAt > EAT_TIME + 1.2;
+  paper();
+  // noren curtain
+  line(220, 26, 580, 26, 4);
+  '迴轉壽司'.split('').forEach((ch, i) => {
+    const x = 226 + i * 88, sway = Math.sin(t * 1.5 + i) * 2;
+    ctx.beginPath(); ctx.moveTo(x, 26); ctx.lineTo(x + 84, 26); ctx.lineTo(x + 84 + sway, 104); ctx.lineTo(x + sway, 104); ctx.closePath();
+    ctx.fillStyle = '#2f4a7a'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#f7f9fc'; ctx.font = '700 34px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText(ch, x + 42 + sway / 2, 78);
+  });
+  // conveyor belt
+  ctx.fillStyle = '#d3dcea'; ctx.fillRect(0, 196, W, 24);
+  line(0, 196, W, 196, 2.5); line(0, 220, W, 220, 2.5);
+  for (let x = -40 + (t * 55) % 40; x < W; x += 40) line(x, 200, x, 216, 1, '#9aa8c0');
+  for (let i = 0; i < 7; i++) sushi(((i * 150 + t * 55) % 1050) - 120, 196, PLATES[i % PLATES.length]);
+  // floor, table, stools
+  line(60, 412, 740, 412, 2.5);
+  ctx.fillStyle = '#e9d6bd'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.rect(310, 356, 180, 9); ctx.fill(); ctx.stroke();
+  line(325, 365, 325, 412); line(475, 365, 475, 412);
+  for (const x of [252, 548]) { line(x - 16, 382, x + 16, 382, 4); line(x - 10, 382, x - 14, 412, 2.5); line(x + 10, 382, x + 14, 412, 2.5); }
+
+  // plates only stack up when the viewer presses 吃下一盤
+  const eatP = clamp((t - meal.eatAt) / EAT_TIME);
+  const eating = eatP > 0 && eatP < 1;
+  const shown = eating && eatP < 0.55 ? meal.count - 1 : meal.count;
+  const full = meal.count >= SUSHI_MAX && !eating;
+  stack(342, 352, shown);
+  stack(458, 352, shown);
+  // tea cups
+  for (const x of [384, 418]) { ctx.beginPath(); ctx.roundRect(x - 7, 338, 14, 17, 3); ctx.fillStyle = '#9fc39a'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke(); }
+
+  const TABLE = [0.95, 0.55], MOUTH = [0.55, 2.62], BELLY = [0.1, 1.4];
+  // one bite = arm up to the mouth and back down
+  const k = eating ? Math.sin(eatP * Math.PI) : 0;
+  const k175 = eating ? Math.sin(clamp(eatP * 1.1 - 0.05) * Math.PI) : 0;
+  const staring = !eating && !full && (t % 9) > 5 && (t % 9) < 8;
+  const sit = { lean: full ? -0.12 : 0.08, legF: SIT_F, legB: SIT_B, prop: full ? null : chopsticks };
+  person({ x: 252, y: 380, f: 1, glasses: true, ...sit, armF: full ? BELLY : lerpPose(TABLE, MOUTH, k), armB: full ? [0.2, 1.3] : [1.1, 0.35], blush: staring ? 1 : 0, bob: -k * 2 });
+  if (full) {
+    // 175 laughs at 180: shaking shoulders, hand over mouth, pointing at him
+    const shake = Math.abs(Math.sin(t * 14)) * 3;
+    person({ x: 548, y: 380, f: -1, hair: true, lean: 0.14 + Math.sin(t * 14) * 0.03, legF: SIT_F, legB: SIT_B, armF: [0.6, 2.4], armB: [1.35, 0.15], laugh: true, blush: 1, bob: -shake });
+    if (crossed(prev, t, 0.7, 0)) spawn(585, 280, 1, Math.random() < 0.5 ? '哈' : '哈哈', 1.2);
+  } else {
+    person({ x: 548, y: 380, f: -1, hair: true, ...sit, armF: lerpPose(TABLE, MOUTH, k175), armB: [1.1, 0.35], bob: -k175 * 2 });
+  }
+  if (staring && crossed(prev, t, 9, 5.1)) spawn(268, 290, 3);
+  if (eating && eatP > 0.55 && (prev - meal.eatAt) / EAT_TIME <= 0.55) { spawn(342, 320, 1); spawn(458, 320, 1); }
+
+  if (full) {
+    // speech bubble: 吃不下了
+    const pop = ease((t - meal.eatAt - EAT_TIME) / 0.3), wob = Math.sin(t * 4) * 2;
+    ctx.save(); ctx.translate(200, 250 + wob); ctx.scale(pop, pop);
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.roundRect(-70, -34, 140, 52, 18); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(28, 17); ctx.lineTo(44, 40); ctx.lineTo(10, 17); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.fillRect(12, 14, 14, 5);
+    ctx.fillStyle = INK; ctx.font = '700 24px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('吃不下了～', 0, 0);
+    ctx.restore();
+    // sweat drop on 180
+    ctx.fillStyle = '#7fb2e8'; ctx.beginPath(); ctx.arc(232, 304 + (t * 20) % 14, 4, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+// ---------- scene 2: movie ----------
+function popcorn(cx, top) {
+  ctx.fillStyle = '#fff4d6'; ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
+  for (const [dx, dy] of [[-10, 2], [0, -4], [10, 1], [-4, 4], [6, -1]]) { ctx.beginPath(); ctx.arc(cx + dx, top + dy, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+  ctx.beginPath(); ctx.moveTo(cx - 17, top + 4); ctx.lineTo(cx + 17, top + 4); ctx.lineTo(cx + 12, top + 40); ctx.lineTo(cx - 12, top + 40); ctx.closePath();
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.save(); ctx.clip(); ctx.fillStyle = '#e04b4b';
+  for (let x = cx - 17; x < cx + 17; x += 10) ctx.fillRect(x, top, 5, 44);
+  ctx.restore(); ctx.lineWidth = 2; ctx.stroke();
+}
+function burst(x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2, rr = i % 2 ? r * 0.45 : r; ctx.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  ctx.closePath(); ctx.fillStyle = '#ffd34d'; ctx.fill(); ctx.strokeStyle = '#e04b4b'; ctx.lineWidth = 1.5; ctx.stroke();
+}
+function sceneMovie(t, prev, dt) {
+  sceneDone = t > 9;
+  const T = t % 11;
+  ctx.fillStyle = '#151b2f'; ctx.fillRect(0, 0, W, H);
+  const glow = 0.75 + 0.25 * Math.sin(t * 9) * Math.sin(t * 2.3);
+  // light spill from the screen
+  const g = ctx.createRadialGradient(660, 160, 20, 660, 160, 520);
+  g.addColorStop(0, `rgba(170,200,255,${0.32 * glow})`); g.addColorStop(1, 'rgba(170,200,255,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // screen with a tiny film playing
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(560, 50); ctx.lineTo(770, 30); ctx.lineTo(770, 290); ctx.lineTo(560, 260); ctx.closePath();
+  ctx.fillStyle = `rgba(214,230,255,${0.85 * glow + 0.15})`; ctx.fill(); ctx.clip();
+  // the film: a crew rowing a war galley across the sea
+  const FC = '#30405f', wl = 236 + Math.sin(t * 1.6) * 3, row = t * 3.2;
+  ctx.fillStyle = '#9db4d8'; ctx.fillRect(540, 236, 260, 80);
+  // mast and sail
+  line(662, wl - 10, 662, wl - 92, 3, FC);
+  ctx.fillStyle = '#d8323f'; ctx.strokeStyle = FC; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(634, wl - 86); ctx.lineTo(690, wl - 86); ctx.quadraticCurveTo(700, wl - 58, 690, wl - 30); ctx.lineTo(634, wl - 30); ctx.quadraticCurveTo(644, wl - 58, 634, wl - 86); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#f7f9fc'; ctx.fillRect(636, wl - 66, 52, 6);
+  ctx.fillStyle = FC; ctx.beginPath(); ctx.moveTo(662, wl - 92); ctx.lineTo(680 + Math.sin(t * 6) * 3, wl - 98); ctx.lineTo(662, wl - 104); ctx.fill();
+  // rowers pulling in sync, with a drummer at the bow
+  const pull = Math.sin(row);
+  for (let i = 0; i < 6; i++) {
+    const rx = 604 + i * 20;
+    person({ x: rx, y: wl - 8, s: 0.32, f: -1, col: FC, face: '#d6e6ff', lean: 0.25 * pull, armF: [1.3 - 0.35 * pull, 0.3], armB: [1.2 - 0.35 * pull, 0.35], legF: [1.5, -1.4], legB: [1.4, -1.3] });
+    const ox = rx - 6 - 6 * pull, tip = { x: rx - 26 + 14 * pull, y: wl + 20 };
+    line(ox, wl - 14, tip.x, tip.y, 2, '#8a5a3c');
+    ctx.fillStyle = '#8a5a3c'; ctx.beginPath(); ctx.ellipse(tip.x, tip.y, 5, 2.5, -0.6, 0, Math.PI * 2); ctx.fill();
+    if (pull > 0.85) { ctx.fillStyle = '#f7f9fc'; ctx.beginPath(); ctx.arc(tip.x - 4, tip.y - 3, 2, 0, Math.PI * 2); ctx.arc(tip.x + 3, tip.y - 5, 1.6, 0, Math.PI * 2); ctx.fill(); }
+  }
+  person({ x: 728, y: wl - 8, s: 0.34, f: -1, col: FC, face: '#d6e6ff', armF: [2.4 - 0.8 * Math.abs(Math.sin(row)), 0.3], armB: [0.4, 0.4] });
+  // hull with a raised stern and a carved prow
+  ctx.fillStyle = '#6b4a35'; ctx.strokeStyle = FC; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(578, wl - 30); ctx.quadraticCurveTo(586, wl - 10, 592, wl - 8); ctx.lineTo(742, wl - 8);
+  ctx.quadraticCurveTo(752, wl - 18, 758, wl - 36); ctx.lineTo(764, wl - 32); ctx.quadraticCurveTo(760, wl + 2, 732, wl + 10);
+  ctx.lineTo(604, wl + 10); ctx.quadraticCurveTo(582, wl, 578, wl - 30); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#e2b23c'; for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.arc(608 + i * 22, wl, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+  // waves rolling past
+  ctx.strokeStyle = '#f7f9fc'; ctx.lineWidth = 2;
+  for (let r = 0; r < 3; r++) for (let i = 0; i < 7; i++) {
+    const x = 540 + ((i * 44 - t * 50 + r * 20) % 300 + 300) % 300, y = 252 + r * 14;
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 8, y - 5, x + 16, y); ctx.stroke();
+  }
+  ctx.restore();
+
+  const COL = '#e6ecf8', FACE = '#151b2f';
+  // seats behind each person
+  for (const x of [282, 402]) { ctx.fillStyle = '#7a2e3d'; ctx.beginPath(); ctx.roundRect(x - 34, 300, 16, 104, 6); ctx.fill(); ctx.beginPath(); ctx.roundRect(x - 26, 384, 52, 16, 5); ctx.fill(); }
+  ctx.fillStyle = '#5c2230'; ctx.fillRect(330, 360, 20, 44);
+  popcorn(340, 324);
+
+  const REST = [0.45, 0.95];
+  const reach = ease((T - 4.6) / 1.2) * (1 - ease((T - 8.2) / 1));
+  const look = T > 2.2 && T < 3.8;
+  const face = T > 5.8 && T < 8.6;
+  const blush = clamp((T - 5.8) * 2) * (1 - clamp((T - 9) * 1.5));
+  person({ x: 282, y: 382, f: 1, hair: true, col: COL, face: FACE, legF: SIT_F, legB: SIT_B, armF: lerpPose(REST, [1.1, 0.2], reach), armB: [0.5, 0.9], hf: face ? 1 : 1, blush });
+  person({ x: 402, y: 382, f: 1, glasses: true, col: COL, face: FACE, legF: SIT_F, legB: SIT_B, armF: lerpPose(REST, [-1.1, -0.2], reach), armB: [0.5, 0.9], hf: (look || face) ? -1 : 1, blush });
+  // front-row seat silhouettes
+  ctx.fillStyle = '#0d1121';
+  for (let x = 40; x < W; x += 110) { ctx.beginPath(); ctx.roundRect(x, 446, 92, 80, 18); ctx.fill(); }
+  if (crossed(prev, t, 11, 5.8)) { spawn(340, 300, 7, 'heart', 2.4); }
+  if (look && crossed(prev, t, 11, 2.6)) spawn(410, 290, 1);
+}
+
+// ---------- scene 3: arcade basketball ----------
+function ball(x, y) {
+  ctx.beginPath(); ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fillStyle = '#f0883e'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke();
+  ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x - 9, y); ctx.lineTo(x + 9, y); ctx.moveTo(x, y - 9); ctx.lineTo(x, y + 9); ctx.stroke();
+}
+const SHOT = 2.4, HOOP = { x: 668, y: 202 };
+const SHOOTERS = [
+  { name: '175', who: { x: 470, y: 360, f: 1, hair: true }, arc: 140, at: -99 },
+  { name: '180', who: { x: 360, y: 360, f: 1, glasses: true }, arc: 175, at: -99 },
+];
+const hoop = { score: 0, turn: 0, visit: 0 }; // score carries over to the application form
+const HOLD = [0.55, 1.9], RELEASE = [2.55, 0.25], R175 = { x: 470, y: 360, f: 1, hair: true };
+function sceneArcade(t, prev) {
+  sceneDone = hoop.visit >= 4 && SHOOTERS.every(sh => t - sh.at > SHOT);
+  paper();
+  line(60, 424, 740, 424, 2.5);
+  // cabinet
+  ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  ctx.fillStyle = '#eef2f8'; ctx.beginPath(); ctx.rect(580, 40, 180, 384); ctx.fill(); ctx.stroke();
+  ctx.save(); ctx.beginPath(); ctx.rect(584, 108, 172, 196); ctx.clip(); ctx.strokeStyle = 'rgba(34,48,74,.14)'; ctx.lineWidth = 1;
+  for (let k = -200; k < 400; k += 16) { ctx.beginPath(); ctx.moveTo(584 + k, 108); ctx.lineTo(584 + k + 196, 304); ctx.moveTo(584 + k + 196, 108); ctx.lineTo(584 + k, 304); ctx.stroke(); }
+  ctx.restore();
+  // score board
+  ctx.fillStyle = '#1b2236'; ctx.beginPath(); ctx.roundRect(600, 54, 140, 46, 6); ctx.fill();
+  for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.arc(592 + i * 20, 46, 3.5, 0, Math.PI * 2); ctx.fillStyle = (i + Math.floor(t * 6)) % 2 ? '#e2b23c' : PINK; ctx.fill(); }
+  // backboard, hoop
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.rect(626, 120, 84, 66); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = '#e04b4b'; ctx.beginPath(); ctx.rect(652, 152, 32, 26); ctx.stroke();
+  // ramp + lower panel
+  ctx.strokeStyle = INK; line(580, 330, 760, 304, 3);
+  ctx.fillStyle = '#2f4a7a'; ctx.beginPath(); ctx.rect(580, 340, 180, 84); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#f7f9fc'; ctx.font = '700 28px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('投籃機', 670, 392);
+  for (let i = 0; i < 3; i++) ball(610 + i * 20, 322 - i * 3);
+
+  // one throw per press of 投一球, 175 and 180 take turns
+  ctx.strokeStyle = '#e04b4b'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(HOOP.x, HOOP.y, 22, 5, 0, Math.PI, Math.PI * 2); ctx.stroke();
+  const flying = [];
+  let pending = 0;
+  for (const sh of SHOOTERS) {
+    const since = t - sh.at, u = since >= 0 && since < SHOT ? since / SHOT : -1;
+    if (u >= 0 && u <= 0.86) pending++;
+    let armPose = ARM_REST, crouch = 0;
+    if (u >= 0) {
+      const winding = ease(u / 0.3), throwing = ease((u - 0.3) / 0.12), lowering = ease((u - 0.6) / 0.2);
+      armPose = u > 0.6 ? lerpPose(RELEASE, ARM_REST, lowering) : u > 0.3 ? lerpPose(HOLD, RELEASE, throwing) : lerpPose(ARM_REST, HOLD, winding);
+      crouch = u < 0.3 ? winding * 6 : u < 0.42 ? (1 - throwing) * 6 : 0;
+    }
+    const scored = u > 0.86;
+    const hand = person({ ...sh.who, armF: armPose, armB: [armPose[0] - 0.15, armPose[1]], bob: crouch - (scored ? Math.abs(Math.sin(t * 16)) * 6 : 0), blush: scored ? 1 : 0 });
+    const rel = geo({ ...sh.who, armF: RELEASE }), rp = rel.abs(rel.armF.p2);
+    if (u >= 0) flying.push({ u, hand, rp, arc: sh.arc });
+    if (prev - sh.at < SHOT * 0.86 && since >= SHOT * 0.86) { spawn(HOOP.x, HOOP.y - 30, 1, '+2', 0.3); spawn(sh.who.x + 12, 270, 1); }
+  }
+  for (const b of flying) {
+    if (b.u <= 0.42) ball(b.hand.x + 6, b.hand.y - 6);
+    else if (b.u <= 0.86) { const k = (b.u - 0.42) / 0.44; ball(lerp(b.rp.x + 6, HOOP.x, k), lerp(b.rp.y - 6, HOOP.y - 8, k) - b.arc * 4 * k * (1 - k)); }
+    else { const k = (b.u - 0.86) / 0.14; ball(HOOP.x, HOOP.y - 8 + k * k * 90); }
+  }
+  ctx.strokeStyle = '#e04b4b'; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(HOOP.x, HOOP.y, 22, 5, 0, 0, Math.PI); ctx.stroke();
+  ctx.strokeStyle = 'rgba(34,48,74,.6)'; ctx.lineWidth = 1.3;
+  for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(HOOP.x + i * 10, HOOP.y + 3); ctx.lineTo(HOOP.x + i * 6, HOOP.y + 28); ctx.stroke(); }
+  // score board
+  const score = hoop.score - pending * 2;
+  ctx.fillStyle = '#ff6b6b'; ctx.font = '700 30px ui-monospace, "SF Mono", Menlo, monospace'; ctx.textAlign = 'center';
+  ctx.fillText(String(score).padStart(3, '0'), 670, 88);
+}
+
+// ---------- scene 4: baking the cake ----------
+const CAKE_NAME = '焙茶銀河流沙巧克力裂縫';
+const STARS = Array.from({ length: 22 }, (_, i) => ({ a: i * 2.39, r: Math.sqrt((i + 0.5) / 22), k: 2 + (i % 5) }));
+const sifter = (h, a, f) => {
+  const x = h.x + f * 12, y = h.y - 4;
+  ctx.save(); ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(h.x, h.y); ctx.lineTo(x - f * 8, y); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(x + f * 6, y, 14, 5, 0, 0, Math.PI * 2); ctx.fillStyle = '#c9d3e0'; ctx.fill(); ctx.stroke();
+  ctx.restore();
+};
+const whisk = (h) => {
+  ctx.save(); ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(h.x, h.y - 4); ctx.lineTo(h.x, h.y + 12); ctx.stroke();
+  for (const w of [4, 8]) { ctx.beginPath(); ctx.ellipse(h.x, h.y + 22, w, 11, 0, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.restore();
+};
+const fork = (h, a, f) => {
+  const dx = Math.sin(a) * f, dy = Math.cos(a);
+  ctx.save(); ctx.lineWidth = 2; ctx.strokeStyle = '#8b97ad';
+  ctx.beginPath(); ctx.moveTo(h.x, h.y); ctx.lineTo(h.x + dx * 20, h.y + dy * 20); ctx.stroke();
+  for (const o of [-3, 0, 3]) { ctx.beginPath(); ctx.moveTo(h.x + dx * 20 - dy * o, h.y + dy * 20 + dx * o); ctx.lineTo(h.x + dx * 27 - dy * o, h.y + dy * 27 + dx * o); ctx.stroke(); }
+  ctx.restore();
+};
+function bubble(x, y, text, pop, tailRight = true) {
+  pop = ease(pop);
+  if (pop <= 0) return;
+  ctx.save(); ctx.translate(x, y); ctx.scale(pop, pop);
+  ctx.font = '700 24px "LXGW WenKai TC", serif'; ctx.textAlign = 'center';
+  const w = ctx.measureText(text).width + 40;
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.roundRect(-w / 2, -34, w, 52, 18); ctx.fill(); ctx.stroke();
+  const d = tailRight ? 1 : -1;
+  ctx.beginPath(); ctx.moveTo(d * 14, 17); ctx.lineTo(d * 30, 40); ctx.lineTo(d * -4, 17); ctx.fill(); ctx.stroke();
+  ctx.fillRect(Math.min(d * 14, d * -4) + 2, 14, 14, 5);
+  ctx.fillStyle = INK; ctx.fillText(text, 0, 0);
+  ctx.restore();
+}
+function clerk(T, t) {
+  // runs in from the right, then stops with a hand up
+  const run = clamp((T - 9.2) / 1.1), x = lerp(840, 650, ease(run)), running = run < 1;
+  const sw = running ? Math.sin(t * 16) * 0.8 : 0;
+  ctx.fillStyle = '#9fc39a'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x - 10, 318); ctx.lineTo(x + 10, 318); ctx.lineTo(x + 15, 364); ctx.lineTo(x - 15, 364); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = INK; ctx.font = '700 13px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('店員', x, 346);
+  person({ x, y: 360, f: -1, lean: running ? 0.2 : 0, armF: running ? [sw, 1.2] : [1.6, -0.2], armB: running ? [-sw, 1.2] : [0.6, -1.6], legF: running ? [sw, 0.4] : LEG_F, legB: running ? [-sw, 0.4] : LEG_B, bob: running ? -Math.abs(Math.sin(t * 16)) * 4 : 0 });
+  // cap
+  const hx = x + (running ? -Math.sin(0.2) * 75 : 0);
+  ctx.fillStyle = '#e04b4b'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(hx, 276, 16, 8, 0, Math.PI, 0); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(hx, 276); ctx.lineTo(hx - 24, 278); ctx.stroke();
+  if (T >= 10.4) bubble(650, 238, '在店裡不能吃！', (T - 10.4) * 4, true);
+}
+function sceneCake(t, prev) {
+  sceneDone = t > 15;
+  paper();
+  const T = t; // plays once, then holds on the hungry ending
+  // kitchen: shelf with jars, counter, floor
+  line(80, 110, 300, 110, 3);
+  [['可可', '#5a3523'], ['焙茶', '#a9825a'], ['糖', '#f7f9fc']].forEach(([label, col], i) => {
+    const x = 100 + i * 66;
+    ctx.beginPath(); ctx.roundRect(x, 64, 48, 46, 6); ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.fillRect(x + 6, 78, 36, 18); ctx.strokeRect(x + 6, 78, 36, 18);
+    ctx.fillStyle = INK; ctx.font = '700 13px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText(label, x + 24, 92);
+  });
+  line(60, 424, 740, 424, 2.5);
+  ctx.fillStyle = '#e9d6bd'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.rect(330, 356, 140, 68); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#d8c2a4'; ctx.beginPath(); ctx.rect(320, 350, 160, 10); ctx.fill(); ctx.stroke();
+  line(400, 364, 400, 420, 1.5);
+
+  const mixing = T < 4.4, cakeOn = T > 4.6;
+  let arm180 = [1.9, 0.3], arm175 = [1.3 + 0.18 * Math.sin(t * 9), 0.6 + 0.25 * Math.cos(t * 9)];
+  if (mixing) {
+    // bowl with batter, hojicha powder falling from the sifter
+    const fill = clamp(T / 4);
+    ctx.beginPath(); ctx.ellipse(395, 336, 38, 8, 0, 0, Math.PI * 2); ctx.fillStyle = `rgb(${lerp(120, 150, fill)},${lerp(80, 110, fill)},${lerp(55, 70, fill)})`; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(355, 334); ctx.quadraticCurveTo(395, 372, 435, 334); ctx.closePath(); ctx.fillStyle = '#dfe9f3'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(395, 334, 40, 8, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#a9825a';
+    for (let i = 0; i < 14; i++) { const k = ((t * 1.4 + i / 14) % 1); ctx.globalAlpha = 0.8 * (1 - k); ctx.beginPath(); ctx.arc(352 + (i * 37 % 26), 288 + k * 42, 1.8, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+  }
+  if (cakeOn) {
+    const grow = ease((T - 4.6) / 0.4);
+    ctx.save(); ctx.translate(400, 350); ctx.scale(grow, grow); ctx.translate(-400, -350);
+    // plate
+    ctx.beginPath(); ctx.ellipse(400, 350, 82, 10, 0, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.stroke();
+    // body: hojicha sponge below, chocolate above
+    ctx.beginPath(); ctx.moveTo(340, 282); ctx.lineTo(340, 344); ctx.ellipse(400, 344, 60, 12, 0, Math.PI, 0, true); ctx.lineTo(460, 282); ctx.closePath();
+    ctx.fillStyle = '#b98a5e'; ctx.fill();
+    ctx.save(); ctx.clip(); ctx.fillStyle = '#5a3523'; ctx.fillRect(330, 270, 140, 44);
+    ctx.beginPath(); ctx.ellipse(400, 314, 60, 12, 0, 0, Math.PI); ctx.fill(); ctx.restore();
+    ctx.beginPath(); ctx.moveTo(340, 282); ctx.lineTo(340, 344); ctx.ellipse(400, 344, 60, 12, 0, Math.PI, 0, true); ctx.lineTo(460, 282); ctx.stroke();
+    // galaxy top
+    const gal = ctx.createRadialGradient(390, 278, 4, 400, 282, 62);
+    gal.addColorStop(0, '#6a4fb3'); gal.addColorStop(0.55, '#2e2768'); gal.addColorStop(1, '#141238');
+    ctx.beginPath(); ctx.ellipse(400, 282, 60, 13, 0, 0, Math.PI * 2); ctx.fillStyle = gal; ctx.fill(); ctx.stroke();
+    for (const st of STARS) {
+      ctx.globalAlpha = 0.5 + 0.5 * Math.sin(t * st.k + st.a);
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(400 + Math.cos(st.a) * st.r * 54, 282 + Math.sin(st.a) * st.r * 10, 1.3, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    // the crack, glowing molten chocolate
+    const crack = [[350, 281], [366, 277], [381, 285], [398, 278], [414, 286], [432, 279], [450, 283]];
+    ctx.save(); ctx.shadowColor = '#ffb347'; ctx.shadowBlur = 10 + 4 * Math.sin(t * 4);
+    ctx.strokeStyle = '#e9a33a'; ctx.lineWidth = 4; ctx.beginPath(); crack.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+    ctx.restore();
+    // lava oozing down the front
+    const ooze = ease((T - 6) / 4) * 40;
+    if (ooze > 0) {
+      ctx.fillStyle = '#c9782a'; ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(408, 290); ctx.lineTo(408, 294 + ooze); ctx.arc(412, 294 + ooze, 4, Math.PI, 0, true); ctx.lineTo(416, 290); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(380, 290); ctx.lineTo(381, 292 + ooze * 0.5); ctx.arc(384, 292 + ooze * 0.5, 3, Math.PI, 0, true); ctx.lineTo(387, 290); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    ctx.restore();
+    // name card
+    const pop = ease((T - 5.2) / 0.4);
+    if (pop > 0) {
+      ctx.save(); ctx.translate(400, 168); ctx.scale(pop, pop); ctx.rotate(-0.025);
+      ctx.font = '700 30px "LXGW WenKai TC", serif'; ctx.textAlign = 'center';
+      const w = ctx.measureText(CAKE_NAME).width + 48;
+      ctx.beginPath(); ctx.roundRect(-w / 2, -34, w, 64, 10); ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.fillStyle = 'rgba(229,86,127,.3)'; ctx.fillRect(-w / 2 - 12, -42, 52, 18); ctx.fillRect(w / 2 - 40, -42, 52, 18);
+      ctx.fillStyle = INK; ctx.fillText(CAKE_NAME, 0, 9);
+      ctx.restore();
+    }
+    const cheer = T > 4.8 && T < 7;
+    arm180 = cheer ? [2.75, 0.25] : [0.35, 1.4];
+    arm175 = cheer ? [2.75, 0.25] : [0.35, 1.4];
+    if (prev < 5 && t >= 5) spawn(400, 250, 8, 'heart', 3);
+    if (T > 7.5 && T < 8.5 && crossed(prev, t, 1.6, 0)) spawn(400, 240, 1);
+  }
+  if (T > 4.3 && T < 5.1) { // poof
+    const k = (T - 4.3) / 0.8;
+    ctx.save(); ctx.globalAlpha = 1 - k; ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+    for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; ctx.beginPath(); ctx.arc(400 + Math.cos(a) * 40 * (0.5 + k), 320 + Math.sin(a) * 26 * (0.5 + k), 18, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    ctx.restore();
+  }
+  // 8–9.2: forks out; 9.2: the clerk runs in; 10.4: "在店裡不能吃！"; 13+: hungry
+  const happy = cakeOn && T < 7;
+  const forks = T > 8 && T < 10.4, busted = T >= 10.4, hungry = T >= 13;
+  const reachK = forks ? ease((T - 8) / 0.8) : 0;
+  const bob = happy ? -Math.abs(Math.sin(t * 9)) * 8 : busted ? 0 : -Math.abs(Math.sin(t * 2)) * 2;
+  const FORK_IN = [1.45, 0.35], BELLY = [0.1, 1.4];
+  let a180 = arm180, a175 = arm175, b180 = cakeOn ? (happy ? [2.45, 0.25] : [0.25, 1.45]) : [0.9, 1.2], b175 = cakeOn ? (happy ? [2.45, 0.25] : [0.25, 1.45]) : [1.1, 1.3];
+  if (forks) { a180 = lerpPose([0.35, 1.4], FORK_IN, reachK); a175 = lerpPose([0.35, 1.4], FORK_IN, reachK); }
+  if (busted && !hungry) { a180 = a175 = [2.4, 0.5]; b180 = b175 = [2.2, 0.6]; } // hands up, caught
+  if (hungry) { a180 = a175 = BELLY; b180 = b175 = [0.2, 1.3]; }
+  const prop180 = mixing ? sifter : forks ? fork : null, prop175 = mixing ? whisk : forks ? fork : null;
+  person({ x: 290, y: 360, f: 1, glasses: true, armF: a180, armB: b180, prop: prop180, bob, blush: cakeOn && !busted ? 1 : 0, sad: hungry, lean: hungry ? 0.15 : 0 });
+  person({ x: 510, y: 360, f: -1, hair: true, armF: a175, armB: b175, prop: prop175, bob, blush: cakeOn && !busted ? 1 : 0, laugh: happy, sad: hungry, lean: hungry ? 0.15 : 0 });
+
+  if (T > 9.2) clerk(T, t);
+  if (busted && !hungry) {
+    // caught: sweat on both
+    ctx.fillStyle = '#7fb2e8';
+    for (const x of [272, 492]) { ctx.beginPath(); ctx.arc(x, 288 + (t * 20) % 14, 4, 0, Math.PI * 2); ctx.fill(); }
+  }
+  if (hungry && crossed(prev, t, 1.5, 13)) { spawn(296, 330, 1, '咕嚕～', 0.6, '#5a6884'); }
+  if (hungry && crossed(prev, t, 1.5, 13.75)) { spawn(504, 330, 1, '咕嚕～', 0.6, '#5a6884'); }
+  if (hungry) bubble(400, 236, '好餓…', 0.2 + (T - 13) * 4, false);
+}
+
+// ---------- scene 5: split screen, 175 in class vs. 180 gaming on the computer ----------
+const MSG_FIRST = 1.0, MSG_GAP = 0.55, MSG_FLY = 0.7, GAME_OVER_AT = 12;
+const MSG_TEXT = '175 分享了一張照片';
+const msgs = { total: 0, thisVisit: 0 }; // counted into the application form
+const phoneProp = (h) => {
+  ctx.save(); ctx.fillStyle = '#1b2236'; ctx.beginPath(); ctx.roundRect(h.x - 5, h.y - 16, 11, 18, 2); ctx.fill();
+  ctx.fillStyle = '#9fd0ff'; ctx.fillRect(h.x - 3.5, h.y - 14, 8, 13); ctx.restore();
+};
+function photoIcon(x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(-14, -11, 28, 22, 4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#9fd0ff'; ctx.fillRect(-10, -7, 20, 14);
+  ctx.fillStyle = '#4aa86b'; ctx.beginPath(); ctx.moveTo(-10, 7); ctx.lineTo(-3, -1); ctx.lineTo(2, 4); ctx.lineTo(5, 1); ctx.lineTo(10, 7); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#ffd34d'; ctx.beginPath(); ctx.arc(5, -3, 2.5, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+function tag(x, y, text) {
+  ctx.font = '700 16px "LXGW WenKai TC", serif'; ctx.textAlign = 'left';
+  const w = ctx.measureText(text).width + 20;
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.roundRect(x, y, w, 28, 14); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.fillText(text, x + 10, y + 19);
+}
+function sceneSplit(t, prev) {
+  sceneDone = t > 10.5;
+  const sent = Math.max(0, Math.floor((t - MSG_FIRST) / MSG_GAP) + 1);
+  const arrived = Math.max(0, Math.floor((t - MSG_FIRST - MSG_FLY) / MSG_GAP) + 1);
+  const arriveAt = n => MSG_FIRST + MSG_FLY + (n - 1) * MSG_GAP;
+  const sinceArrive = arrived ? t - arriveAt(arrived) : 99;
+  const over = arrived >= GAME_OVER_AT;
+  msgs.thisVisit = arrived;
+
+  // ===== left: 175 in class =====
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(412, 0); ctx.lineTo(388, H); ctx.lineTo(0, H); ctx.closePath(); ctx.clip();
+  ctx.fillStyle = '#f3efe6'; ctx.fillRect(0, 0, 420, H);
+  ctx.fillStyle = '#8a5a3c'; ctx.fillRect(60, 70, 10, 58); ctx.fillRect(46, 86, 38, 10);
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.rect(110, 56, 210, 104); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = INK; ctx.font = '700 24px "LXGW WenKai TC", serif'; ctx.textAlign = 'center';
+  ctx.fillText('傳福音是一件', 215, 98); ctx.fillText('生死攸關的事情', 215, 134);
+  line(20, 424, 400, 424, 2.5);
+  person({ x: 345, y: 360, f: -1, armF: [2.4 + 0.1 * Math.sin(t * 3), 0.1], armB: [0.2, 0.2], bob: -Math.abs(Math.sin(t * 1.5)) * 2 });
+  ctx.fillStyle = '#e9d6bd'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.rect(180, 350, 100, 8); ctx.fill(); ctx.stroke();
+  line(190, 358, 190, 424); line(270, 358, 270, 424);
+  ctx.fillStyle = '#fff'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(206, 348); ctx.quadraticCurveTo(220, 340, 232, 346); ctx.quadraticCurveTo(244, 340, 258, 348); ctx.lineTo(258, 350); ctx.lineTo(206, 350); ctx.closePath(); ctx.fill(); ctx.stroke();
+  line(98, 378, 136, 378, 4); line(102, 378, 98, 424, 2.5); line(132, 378, 136, 424, 2.5); line(98, 378, 92, 318, 3);
+  // the teacher says one phrase at a time
+  const TALK = ['劃定時間', '聯於葡萄樹', '職場是漁場'], TALK_GAP = 2.6;
+  const ti = Math.floor(t / TALK_GAP), tk = t - ti * TALK_GAP;
+  if (tk < TALK_GAP - 0.25) bubble(282, 222, TALK[ti % TALK.length], tk * 4, true);
+  const tapping = t > MSG_FIRST - 0.3;
+  const hand175 = person({ x: 118, y: 374, f: 1, hair: true, legF: SIT_F, legB: SIT_B, armF: [0.75, 1.05 + (tapping ? 0.09 * Math.sin(t * 34) : 0)], armB: [0.6, 1.1], prop: phoneProp, blush: 0.6, laugh: tapping });
+  ctx.restore();
+
+  // ===== right: 180 playing a computer game =====
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(412, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H); ctx.lineTo(388, H); ctx.closePath(); ctx.clip();
+  paper(false);
+  line(390, 424, 800, 424, 2.5);
+  // desk, monitor, keyboard, mouse
+  ctx.fillStyle = '#e9d6bd'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.rect(575, 350, 215, 9); ctx.fill(); ctx.stroke();
+  line(588, 359, 588, 424); line(776, 359, 776, 424);
+  ctx.fillStyle = '#3a4560'; ctx.fillRect(679, 326, 12, 24); ctx.fillRect(660, 344, 50, 6);
+  ctx.fillStyle = '#1b2236'; ctx.beginPath(); ctx.roundRect(612, 226, 146, 102, 6); ctx.fill();
+  const looking = !over && arrived % 2 === 1;
+  ctx.save(); ctx.beginPath(); ctx.rect(620, 234, 130, 86); ctx.clip();
+  ctx.fillStyle = '#20304f'; ctx.fillRect(620, 234, 130, 86);
+  if (over) {
+    ctx.fillStyle = Math.floor(t * 2) % 2 ? '#ff6b6b' : '#ffd34d'; ctx.font = '700 17px ui-monospace, Menlo, monospace'; ctx.textAlign = 'center';
+    ctx.fillText('GAME OVER', 685, 283);
+  } else {
+    // little space shooter
+    const shipY = 300 + Math.sin(t * 3) * 4;
+    ctx.save(); ctx.translate(Math.sin(t * 2) * 30 + 45, 0);
+    ctx.fillStyle = '#7fb2e8'; ctx.beginPath(); ctx.moveTo(640, shipY); ctx.lineTo(632, shipY + 8); ctx.lineTo(648, shipY + 8); ctx.closePath(); ctx.fill();
+    if (!looking) { ctx.fillStyle = '#ffd34d'; for (let i = 0; i < 3; i++) ctx.fillRect(639, shipY - 10 - ((t * 120 + i * 22) % 66), 2, 6); }
+    ctx.restore();
+    ctx.fillStyle = '#e04b4b';
+    for (let i = 0; i < 5; i++) ctx.fillRect(632 + i * 24 + Math.sin(t * 2 + i) * (looking ? 0 : 4), 246 + (i % 2) * 12, 12, 8);
+    if (looking) { ctx.fillStyle = '#fff'; ctx.fillRect(675, 262, 7, 24); ctx.fillRect(689, 262, 7, 24); }
+  }
+  ctx.restore();
+  ctx.fillStyle = '#c9d3e0'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.rect(588, 343, 62, 7); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(724, 346, 7, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  // side table with the phone
+  ctx.fillStyle = '#e9d6bd'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.rect(432, 364, 52, 8); ctx.fill(); ctx.stroke();
+  line(440, 372, 440, 424); line(476, 372, 476, 424);
+  const buzz = sinceArrive < 0.4 ? Math.sin(t * 70) * 2 : 0;
+  const phonePos = { x: 458, y: 358 };
+  if (!over) {
+    ctx.fillStyle = '#1b2236'; ctx.beginPath(); ctx.roundRect(phonePos.x - 11 + buzz, 354, 22, 10, 2); ctx.fill();
+    ctx.fillStyle = '#9fd0ff'; ctx.fillRect(phonePos.x - 9 + buzz, 356, 18, 6);
+    ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
+    for (const d of [14, 20]) { ctx.beginPath(); ctx.arc(phonePos.x, 359, d, -2.4, -0.8); ctx.stroke(); }
+  }
+  // office chair + 180
+  ctx.fillStyle = '#3a4560'; ctx.fillRect(506, 316, 9, 64); ctx.fillRect(518, 376, 56, 8);
+  line(546, 384, 546, 414, 3); line(526, 418, 566, 418, 3);
+  const p180 = over
+    ? { armF: [0.55, 2.35], armB: [0.5, 2.1], prop: phoneProp, blush: 1, laugh: true }
+    : { armF: [1.0, 0.6 + (looking ? 0 : 0.07 * Math.sin(t * 26))], armB: [0.95, 0.65 + (looking ? 0 : 0.07 * Math.cos(t * 26))], hf: looking ? -1 : 1 };
+  const hand180 = person({ x: 545, y: 374, f: 1, glasses: true, legF: SIT_F, legB: SIT_B, ...p180 });
+  const badgeAt = over ? { x: hand180.x + 9, y: hand180.y - 20 } : { x: phonePos.x + 12 + buzz, y: 352 };
+  if (arrived) {
+    ctx.fillStyle = '#e04b4b'; ctx.beginPath(); ctx.arc(badgeAt.x, badgeAt.y, 10, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = '700 11px ui-monospace, Menlo, monospace'; ctx.textAlign = 'center'; ctx.fillText(arrived > 99 ? '99+' : String(arrived), badgeAt.x, badgeAt.y + 4);
+  }
+  // notifications pile up, newest at the bottom
+  ctx.font = '700 15px "LXGW WenKai TC", serif';
+  const tw = ctx.measureText(MSG_TEXT).width + 50;
+  for (let j = 0; j < 4 && arrived - j > 0; j++) {
+    const age = t - arriveAt(arrived - j);
+    const k = ease(age / 0.15) * (1 - ease((age - 1.8) / 0.3));
+    if (k <= 0) continue;
+    const y = 200 - j * 42 - (1 - ease(age / 0.15)) * 12;
+    ctx.save(); ctx.globalAlpha = k;
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(430, y, tw, 36, 10); ctx.fill(); ctx.stroke();
+    photoIcon(452, y + 18, 0.7);
+    ctx.fillStyle = INK; ctx.textAlign = 'left'; ctx.fillText(MSG_TEXT, 470, y + 23);
+    ctx.restore();
+  }
+  ctx.restore();
+
+  // divider between the two panels
+  ctx.fillStyle = PAPER; ctx.strokeStyle = INK; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(406, 0); ctx.lineTo(418, 0); ctx.lineTo(394, H); ctx.lineTo(382, H); ctx.closePath(); ctx.fill(); ctx.stroke();
+  tag(16, 14, '175・課堂上'); tag(W - 108, 14, '180・家裡');
+
+  // photos flying across the divider
+  for (let i = Math.max(0, sent - 3); i < sent; i++) {
+    const k = (t - (MSG_FIRST + i * MSG_GAP)) / MSG_FLY;
+    if (k < 0 || k > 1) continue;
+    const to = over ? hand180 : phonePos;
+    const x = lerp(hand175.x + 6, to.x, k), y = lerp(hand175.y - 10, to.y, k) - 4 * k * (1 - k) * 170;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(k * Math.PI * 2) * 0.25); photoIcon(0, 0); ctx.restore();
+  }
+  if (over && crossed(prev - MSG_FIRST - MSG_FLY, t - MSG_FIRST - MSG_FLY, MSG_GAP * 3, 0)) spawn(hand180.x, hand180.y - 40, 1);
+}
+
+// ---------- scene: walking on the riverbank ----------
+const WALK_TIME = 1.6, WALK_STEP = 160, WALK_MAX = 3, TOILET_X = WALK_STEP * WALK_MAX + 690;
+const walk = { count: 0, at: -99 };
+function portaToilet(x, doorOpen, busy, shake) {
+  ctx.save(); ctx.translate(x + shake, 0);
+  ctx.fillStyle = '#4f8fd6'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.roundRect(-42, 296, 84, 128, [14, 14, 2, 2]); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#3a74b8'; ctx.beginPath(); ctx.roundRect(-46, 290, 92, 14, 7); ctx.fill(); ctx.stroke();
+  // door (swings open to show the dark inside)
+  ctx.fillStyle = '#1b2236'; ctx.fillRect(-30, 314, 60, 108);
+  const dw = 60 * (1 - doorOpen * 0.85);
+  ctx.fillStyle = '#5d9be0'; ctx.beginPath(); ctx.rect(-30, 314, dw, 108); ctx.fill(); ctx.stroke();
+  if (doorOpen < 0.5) {
+    ctx.strokeStyle = '#2f5f99'; ctx.lineWidth = 2;
+    for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.moveTo(-18, 326 + i * 6); ctx.lineTo(18, 326 + i * 6); ctx.stroke(); }
+    ctx.fillStyle = '#fff'; ctx.font = '700 16px ui-monospace, Menlo, monospace'; ctx.textAlign = 'center'; ctx.fillText('WC', 0, 366);
+    ctx.fillStyle = busy ? '#e04b4b' : '#4aa86b'; ctx.fillRect(14, 372, 12, 7);
+  }
+  ctx.restore();
+}
+function sceneWalk(t, prev) {
+  const since = t - walk.at, walking = since >= 0 && since < WALK_TIME;
+  const scroll = (walk.count - (walking ? 1 - ease(since / WALK_TIME) : 0)) * WALK_STEP;
+  const bursting = walk.count >= WALK_MAX ? since - WALK_TIME : -1; // seconds since the third walk ended
+
+  // night sky with stars and moon, far bank, river
+  const sky = ctx.createLinearGradient(0, 0, 0, 230);
+  sky.addColorStop(0, '#0f1530'); sky.addColorStop(1, '#2a3560');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#fff';
+  for (let i = 0; i < 40; i++) { ctx.globalAlpha = 0.4 + 0.6 * Math.abs(Math.sin(t * (1 + i % 4) + i)); ctx.fillRect((i * 97 + 13) % W, (i * 53) % 190, 2, 2); }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#fff4c9'; ctx.beginPath(); ctx.arc(640, 100, 30, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#2a3560'; ctx.beginPath(); ctx.arc(654, 92, 26, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#1d2a3f'; ctx.beginPath(); ctx.moveTo(0, 230);
+  for (let x = 0; x <= W + 40; x += 40) ctx.lineTo(x, 205 + 14 * Math.sin((x + scroll * 0.25) / 70));
+  ctx.lineTo(W, 230); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#1b2d4f'; ctx.fillRect(0, 228, W, 70);
+  // moon reflection
+  ctx.fillStyle = 'rgba(255,244,201,.5)';
+  for (let i = 0; i < 5; i++) ctx.fillRect(612 + Math.sin(t * 2 + i) * 6, 236 + i * 12, 40 - i * 5, 3);
+  ctx.strokeStyle = 'rgba(200,215,255,.45)'; ctx.lineWidth = 2;
+  for (let i = 0; i < 9; i++) { const x = ((i * 110 - scroll * 0.5 + t * 14) % 990 + 990) % 990 - 60; const y = 244 + (i % 3) * 18; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 10, y - 5, x + 20, y); ctx.stroke(); }
+  // levee grass + path
+  ctx.fillStyle = '#1f3527'; ctx.fillRect(0, 296, W, 128);
+  line(0, 296, W, 296, 2.5, '#0b1120');
+  ctx.fillStyle = '#3a3f52'; ctx.fillRect(0, 424, W, 24); line(0, 424, W, 424, 2.5, '#0b1120'); line(0, 448, W, 448, 2, '#0b1120');
+  ctx.fillStyle = '#1f3527'; ctx.fillRect(0, 449, W, 51);
+  ctx.strokeStyle = '#3f6a48'; ctx.lineWidth = 2;
+  for (let i = 0; i < 14; i++) { const x = ((i * 67 - scroll) % 938 + 938) % 938 - 40, y = 330 + (i * 37 % 70); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 4, y - 9); ctx.moveTo(x, y); ctx.lineTo(x + 4, y - 10); ctx.stroke(); }
+  // lamp posts
+  for (let i = 0; i < 5; i++) {
+    const x = ((i * 260 - scroll) % 1300 + 1300) % 1300 - 100;
+    const glow = ctx.createRadialGradient(x + 18, 326, 4, x + 18, 380, 110);
+    glow.addColorStop(0, 'rgba(255,220,130,.45)'); glow.addColorStop(1, 'rgba(255,220,130,0)');
+    ctx.fillStyle = glow; ctx.beginPath(); ctx.moveTo(x + 12, 326); ctx.lineTo(x + 24, 326); ctx.lineTo(x + 80, 440); ctx.lineTo(x - 44, 440); ctx.closePath(); ctx.fill();
+    line(x, 424, x, 318, 3, '#8b97ad'); line(x, 318, x + 16, 318, 3, '#8b97ad');
+    ctx.fillStyle = '#ffe08a'; ctx.beginPath(); ctx.arc(x + 18, 323, 6, 0, Math.PI * 2); ctx.fill();
+  }
+  // the portable toilet slides in on the third walk
+  const tx = TOILET_X - scroll;
+  // door: opens for 180 to rush in (2.2s), and again when he comes out (7s)
+  const doorOpen = bursting < 0 ? 0 : Math.max(
+    clamp((bursting - 2.2) / 0.3) * (1 - clamp((bursting - 2.9) / 0.3)),
+    clamp((bursting - 7) / 0.3) * (1 - clamp((bursting - 8.3) / 0.3)));
+  const busy = bursting > 3.2 && bursting < 7;
+  if (tx < W + 60) portaToilet(tx, doorOpen, busy, busy ? Math.sin(t * 30) * 1.5 : 0);
+
+  // walkers
+  const ph = walking ? since * 7 : 0, sw = Math.sin(ph) * 0.5;
+  const stride = walking ? { legF: [sw, 0.15], legB: [-sw, 0.15] } : {};
+  const bob = walking ? -Math.abs(Math.sin(ph)) * 3 : 0;
+  // 175: laughs once 180 has fled into the toilet
+  const laughing = bursting > 3;
+  const night = { col: '#e6ecf8', face: '#16213a' };
+  person({ ...night, x: 430, y: 360, f: 1, hf: !laughing && bursting > 0.3 ? -1 : 1, hair: true, ...stride, armF: walking ? [-sw * 0.6, 0.2] : laughing ? [0.6, 2.4] : [0.5, 0.3], armB: [sw * 0.6, 0.2], bob, laugh: laughing, blush: laughing ? 1 : 0.4 });
+  // 180: walks, stops, then dashes to the toilet
+  let x180 = 340, run = 0;
+  if (bursting > 1.4) run = clamp((bursting - 1.4) / 0.9);
+  x180 = lerp(340, tx, ease(run));
+  if (bursting < 3) {
+    const dashing = run > 0 && run < 1, rs = Math.sin(t * 22) * 0.9;
+    const urgent = bursting > 0 && run === 0;
+    person({ ...night, x: x180, y: 360, f: 1, glasses: true,
+      ...(dashing ? { legF: [rs, 0.5], legB: [-rs, 0.5], armF: [-rs, 1.3], armB: [rs, 1.3], lean: 0.3, bob: -Math.abs(Math.sin(t * 22)) * 5 } : stride),
+      ...(urgent ? { legF: [0.25, -0.2], legB: [-0.25, -0.2], armF: [0.35, 1.5], armB: [0.25, 1.5], lean: 0.12, bob: Math.sin(t * 25) * 1.5 } : {}),
+      ...(!dashing && !urgent ? { armF: walking ? [sw * 0.6, 0.2] : [0.5, 0.3], armB: [-sw * 0.6, 0.2], bob } : {}),
+      sad: urgent });
+    if (urgent) { ctx.fillStyle = '#7fb2e8'; ctx.beginPath(); ctx.arc(322, 294 + (t * 24) % 16, 4, 0, Math.PI * 2); ctx.fill(); }
+    if (dashing) for (let i = 0; i < 3; i++) line(x180 - 40 - i * 8, 300 + i * 18, x180 - 64 - i * 8, 300 + i * 18, 2, '#c9d3e0');
+  }
+  if (bursting >= 7.2) {
+    // 180 comes back out, relieved
+    const out = clamp((bursting - 7.2) / 1), stepping = out < 1, ps = Math.sin(t * 9) * 0.5;
+    person({ ...night, x: lerp(tx, tx - 100, ease(out)), y: 360, f: -1, glasses: true, laugh: true, blush: 1,
+      ...(stepping ? { legF: [ps, 0.15], legB: [-ps, 0.15], bob: -Math.abs(Math.sin(t * 9)) * 3 } : {}),
+      armF: stepping ? [-ps * 0.6, 0.2] : [2.7, 0.3], armB: stepping ? [ps * 0.6, 0.2] : [2.4, 0.3] });
+    if (crossed(prev, t, 1.2, walk.at + WALK_TIME + 8.2)) spawn(tx - 100, 260, 1);
+  }
+  sceneDone = bursting > 9;
+  if (bursting > 0.2 && bursting < 2.2) bubble(320, 236, '我想上廁所', (bursting - 0.2) * 4, false);
+  if (walking && crossed(prev, t, 0.8, walk.at)) spawn(385, 270, 1);
+}
+
+// ---------- scene: brunch, then taiyaki and candy apples anyway ----------
+const taiyaki = (h) => {
+  ctx.save(); ctx.translate(h.x + 4, h.y - 8); ctx.rotate(-0.5);
+  ctx.fillStyle = '#d99a4e'; ctx.strokeStyle = INK; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.ellipse(0, 0, 13, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-11, 0); ctx.lineTo(-20, -7); ctx.lineTo(-20, 7); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(7, -2, 1.3, 0, Math.PI * 2); ctx.fill();
+  ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(-1, 0, 4, -1, 1); ctx.arc(-5, 0, 4, -1, 1); ctx.stroke();
+  ctx.restore();
+};
+const candyApple = (h) => {
+  ctx.save();
+  line(h.x, h.y + 4, h.x, h.y - 16, 2, '#c9a27a');
+  ctx.fillStyle = '#d8323f'; ctx.strokeStyle = INK; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.arc(h.x, h.y - 24, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.ellipse(h.x - 3, h.y - 28, 2.5, 4, -0.5, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.9)'; for (const dx of [-5, 1, 6]) { ctx.beginPath(); ctx.arc(h.x + dx, h.y - 16, 1.4, 0, Math.PI * 2); ctx.fill(); }
+  ctx.restore();
+};
+function stall(x, w, title, col) {
+  ctx.fillStyle = '#e9d6bd'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.rect(x, 300, w, 124); ctx.fill(); ctx.stroke();
+  line(x + 8, 300, x + 8, 150, 3); line(x + w - 8, 300, x + w - 8, 150, 3);
+  for (let i = 0; i < 6; i++) {
+    const sx = x + i * w / 6;
+    ctx.fillStyle = i % 2 ? '#fff' : col; ctx.beginPath(); ctx.moveTo(sx, 130); ctx.lineTo(sx + w / 6, 130); ctx.lineTo(sx + w / 6, 156);
+    ctx.quadraticCurveTo(sx + w / 12, 172, sx, 156); ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+  ctx.fillStyle = '#2f4a7a'; ctx.beginPath(); ctx.rect(x + 24, 78, w - 48, 46); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.font = '700 28px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText(title, x + w / 2, 112);
+}
+function sceneBrunch(t, prev) {
+  sceneDone = t > 9;
+  const T = t, street = T >= 5.6;
+  if (!street) {
+    // café: window, lamp, table, brunch plates
+    paper();
+    ctx.fillStyle = '#dcebf7'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.rect(520, 50, 200, 130); ctx.fill(); ctx.stroke(); line(620, 50, 620, 180, 2.5); line(520, 115, 720, 115, 2.5);
+    line(330, 0, 330, 60, 2); ctx.fillStyle = '#e2b23c'; ctx.beginPath(); ctx.moveTo(310, 80); ctx.lineTo(350, 80); ctx.lineTo(340, 60); ctx.lineTo(320, 60); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.rect(110, 70, 120, 70); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = INK; ctx.font = '700 20px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('BRUNCH', 170, 112);
+    line(60, 412, 740, 412, 2.5);
+    ctx.fillStyle = '#e9d6bd'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.rect(310, 356, 180, 9); ctx.fill(); ctx.stroke();
+    line(400, 365, 400, 412, 3); line(375, 412, 425, 412, 3);
+    for (const x of [252, 548]) { line(x - 16, 382, x + 16, 382, 4); line(x - 10, 382, x - 14, 412, 2.5); line(x + 10, 382, x + 14, 412, 2.5); }
+    for (const [px, d] of [[352, 1], [448, -1]]) {
+      ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(px, 352, 28, 6, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#f2d9a6'; ctx.beginPath(); ctx.roundRect(px - 22, 340, 22, 10, 3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(px + 10, 347, 10, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffc93c'; ctx.beginPath(); ctx.arc(px + 10, 346, 3, 0, Math.PI * 2); ctx.fill();
+    }
+    // red juice with a straw
+    line(403, 342, 410, 318, 2.5, '#e5567f');
+    ctx.fillStyle = 'rgba(220,235,247,.6)'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(390, 324); ctx.lineTo(410, 324); ctx.lineTo(407, 355); ctx.lineTo(393, 355); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#d8323f'; ctx.beginPath(); ctx.moveTo(391, 332); ctx.lineTo(409, 332); ctx.lineTo(407, 355); ctx.lineTo(393, 355); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(390, 324); ctx.lineTo(410, 324); ctx.lineTo(407, 355); ctx.lineTo(393, 355); ctx.closePath(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(394, 335, 2.5, 14);
+    const TABLE = [0.95, 0.55], MOUTH = [0.55, 2.62];
+    const cyc = (p, off) => 0.5 - 0.5 * Math.cos(((t + off) % p) / p * Math.PI * 2);
+    const talking = T > 1.2 && T < 4.6;
+    person({ x: 252, y: 380, f: 1, glasses: true, lean: 0.08, legF: SIT_F, legB: SIT_B, armF: lerpPose(TABLE, MOUTH, cyc(2.4, 0)), armB: [1.1, 0.35], prop: fork, hf: 1 });
+    person({ x: 548, y: 380, f: -1, hair: true, lean: 0.08, legF: SIT_F, legB: SIT_B, armF: talking ? [1.1, 0.2] : lerpPose(TABLE, MOUTH, cyc(2.1, 0.7)), armB: [1.1, 0.35], prop: fork });
+    if (talking) bubble(560, 232, '吃完就要回家寫論文', (T - 1.2) * 4, false);
+  } else {
+    // ...and then: taiyaki and candy apples
+    paper();
+    line(60, 424, 740, 424, 2.5);
+    stall(110, 250, '鯛魚燒', '#e04b4b');
+    stall(440, 250, '糖霜蘋果', '#e5567f');
+    for (let i = 0; i < 4; i++) taiyaki({ x: 160 + i * 46, y: 296 });
+    for (let i = 0; i < 5; i++) candyApple({ x: 480 + i * 40, y: 300 });
+    const bite = (p, off) => { const u = ((t + off) % p) / p; return u < 0.35 ? Math.sin(u / 0.35 * Math.PI) : 0; };
+    const EAT_REST = [0.5, 1.6], EAT_MOUTH = [0.45, 2.5];
+    const b1 = bite(2.2, 0), b2 = bite(2.6, 1.1);
+    person({ x: 340, y: 360, f: 1, glasses: true, armF: lerpPose(EAT_REST, EAT_MOUTH, b1), armB: [0.2, 0.2], prop: taiyaki, blush: 0.7, laugh: b2 > 0.5, bob: -Math.abs(Math.sin(t * 2)) * 2 });
+    person({ x: 470, y: 360, f: -1, hair: true, armF: lerpPose(EAT_REST, EAT_MOUTH, b2), armB: [0.2, 0.2], prop: candyApple, blush: 0.7, laugh: b1 > 0.5, bob: -Math.abs(Math.sin(t * 2 + 1)) * 2 });
+    if (crossed(prev, t, 1.8, 6)) spawn(405, 260, 1);
+  }
+  // "結果……" card wipes across between the two halves
+  if (T > 4.6 && T < 6.6) {
+    const inK = ease((T - 4.6) / 0.4), outK = ease((T - 6.1) / 0.5);
+    const x = lerp(W, 0, inK) - outK * W;
+    ctx.fillStyle = INK; ctx.fillRect(x, 0, W, H);
+    ctx.fillStyle = '#f7f9fc'; ctx.font = '700 64px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('結果……', x + W / 2, H / 2 + 20);
+  }
+}
+
+// ---------- scene: bonus news, empty pockets, fried rice at 小樂 ----------
+const spoon = (h, a, f) => {
+  const dx = Math.sin(a) * f, dy = Math.cos(a);
+  ctx.save(); line(h.x, h.y, h.x + dx * 18, h.y + dy * 18, 2, '#8b97ad');
+  ctx.fillStyle = '#c9d3e0'; ctx.beginPath(); ctx.ellipse(h.x + dx * 22, h.y + dy * 22, 4, 3, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+};
+function friedRice(x, y) {
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(x, y, 30, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#f2c94c'; ctx.beginPath(); ctx.ellipse(x, y - 3, 22, 12, 0, Math.PI, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+  const bits = [[-12, -6, '#4aa86b'], [-4, -11, '#e04b4b'], [6, -7, '#4aa86b'], [12, -5, '#f28c5b'], [0, -5, '#fff'], [-8, -9, '#fff']];
+  for (const [dx, dy, c] of bits) { ctx.fillStyle = c; ctx.fillRect(x + dx, y + dy, 3, 3); }
+}
+function sceneNews(t, prev) {
+  sceneDone = t > 13;
+  const T = t, final = T >= 9.6;
+  if (T < 4.6) {
+    // close-up of the newspaper front page
+    const z = 1 + T * 0.04;
+    ctx.fillStyle = '#3a4560'; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.translate(400, 250); ctx.scale(z, z); ctx.rotate(-0.03);
+    ctx.fillStyle = '#f4f1ea'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.rect(-300, -220, 600, 440); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = INK; ctx.textAlign = 'center';
+    ctx.font = '700 34px "LXGW WenKai TC", serif'; ctx.fillText('日 報', 0, -176);
+    line(-280, -162, 280, -162, 2); line(-280, -156, 280, -156, 1);
+    ctx.font = '13px "LXGW WenKai TC", serif'; ctx.fillText('財經版・頭版', 0, -140);
+    ctx.font = '700 50px "LXGW WenKai TC", serif'; ctx.fillText('鴻海員工分紅破百萬', 0, -80);
+    line(-280, -58, 280, -58, 1.5);
+    // photo box with a rising chart and money
+    ctx.fillStyle = '#dfe6ef'; ctx.fillRect(-280, -44, 230, 160); ctx.strokeRect(-280, -44, 230, 160);
+    ctx.strokeStyle = '#d8323f'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-262, 96); ctx.lineTo(-210, 60); ctx.lineTo(-170, 76); ctx.lineTo(-90, -10); ctx.stroke();
+    ctx.fillStyle = '#d8323f'; ctx.beginPath(); ctx.moveTo(-80, -22); ctx.lineTo(-104, -14); ctx.lineTo(-88, 2); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#4aa86b'; ctx.font = '700 36px "LXGW WenKai TC", serif'; ctx.fillText('$$$', -170, 10);
+    // columns of body text
+    ctx.fillStyle = 'rgba(34,48,74,.35)';
+    for (let c = 0; c < 2; c++) for (let r = 0; r < 12; r++) ctx.fillRect(-30 + c * 160, -40 + r * 14, 140 - (r % 4 === 3 ? 50 : 0), 5);
+    for (let c = 0; c < 4; c++) for (let r = 0; r < 5; r++) ctx.fillRect(-280 + c * 142, 136 + r * 14, 128 - (r === 4 ? 40 : 0), 5);
+    ctx.restore();
+  } else if (!final) {
+    // back home: 180 turns out his empty pockets
+    paper();
+    line(60, 424, 740, 424, 2.5);
+    person({ x: 270, y: 360, f: 1, glasses: true, armF: [0.55, -0.15], armB: [-0.55, 0.15], sad: true });
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+    for (const dx of [-14, 14]) { ctx.beginPath(); ctx.moveTo(270 + dx - 7, 352); ctx.lineTo(270 + dx + 7, 352); ctx.lineTo(270 + dx + 5, 368); ctx.lineTo(270 + dx - 5, 368); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    const fx = 270 + Math.cos(t * 4) * 26, fy = 330 + Math.sin(t * 8) * 10;
+    ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(fx, fy, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(fx - 3, fy - 4, 3, 2, -0.6, 0, Math.PI * 2); ctx.ellipse(fx + 3, fy - 4, 3, 2, 0.6, 0, Math.PI * 2); ctx.stroke();
+    bubble(250, 236, '口袋空空…', (T - 4.9) * 4, false);
+    const come = ease((T - 6.4) / 1.2), ws = come < 1 ? Math.sin(t * 9) * 0.5 : 0;
+    if (T > 6.4) person({ x: lerp(-40, 180, come), y: 360, f: 1, hair: true, legF: [ws, 0.15], legB: [-ws, 0.15], armF: come >= 1 ? [1.5, 0.1] : [-ws * 0.6, 0.2], armB: [ws * 0.6, 0.2], laugh: come >= 1 });
+  } else {
+    // 小樂: a little fried-rice shop
+    paper();
+    ctx.fillStyle = '#2f4a7a'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.rect(280, 26, 240, 70); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#ffd34d'; ctx.font = '700 46px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('小樂', 400, 78);
+    for (const x of [240, 560]) {
+      line(x, 26, x, 44, 2);
+      ctx.fillStyle = '#e04b4b'; ctx.beginPath(); ctx.ellipse(x, 66, 15, 21, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#ffd34d'; ctx.fillRect(x - 6, 44, 12, 4); ctx.fillRect(x - 6, 85, 12, 4);
+    }
+    // kitchen: stove with a wok and flames
+    ctx.fillStyle = '#c9d3e0'; ctx.beginPath(); ctx.rect(560, 210, 180, 90); ctx.fill(); ctx.stroke();
+    for (let i = 0; i < 5; i++) { const h = 14 + 8 * Math.abs(Math.sin(t * 9 + i)); ctx.fillStyle = i % 2 ? '#ffd34d' : '#f28c5b'; ctx.beginPath(); ctx.moveTo(612 + i * 12, 210); ctx.lineTo(618 + i * 12, 210 - h); ctx.lineTo(624 + i * 12, 210); ctx.fill(); }
+    ctx.fillStyle = '#3a4560'; ctx.beginPath(); ctx.ellipse(648, 196, 46, 12, 0, 0, Math.PI); ctx.fill(); line(694, 196, 730, 186, 4, '#3a4560');
+    for (let i = 0; i < 6; i++) { const k = (t * 1.5 + i / 6) % 1; ctx.fillStyle = '#f2c94c'; ctx.fillRect(630 + (i * 13) % 40, 186 - Math.sin(k * Math.PI) * 30, 3, 3); }
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.rect(110, 130, 130, 44); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = INK; ctx.font = '700 24px "LXGW WenKai TC", serif'; ctx.fillText('炒飯', 175, 161);
+    // table and the two of them
+    line(60, 412, 740, 412, 2.5);
+    ctx.fillStyle = '#e9d6bd'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.rect(310, 356, 180, 9); ctx.fill(); ctx.stroke();
+    line(400, 365, 400, 412, 3); line(375, 412, 425, 412, 3);
+    for (const x of [252, 548]) { line(x - 16, 382, x + 16, 382, 4); line(x - 10, 382, x - 14, 412, 2.5); line(x + 10, 382, x + 14, 412, 2.5); }
+    friedRice(352, 350); friedRice(448, 350);
+    ctx.strokeStyle = '#c9d3e0'; ctx.lineWidth = 1.5;
+    for (const x of [352, 448]) for (const dx of [-5, 5]) { ctx.beginPath(); ctx.moveTo(x + dx, 334); ctx.quadraticCurveTo(x + dx + 4 + Math.sin(t * 3 + dx) * 2, 324, x + dx, 312); ctx.stroke(); }
+    const TABLE = [0.95, 0.55], MOUTH = [0.55, 2.62];
+    const cyc = (p, off) => 0.5 - 0.5 * Math.cos(((t + off) % p) / p * Math.PI * 2);
+    const k1 = cyc(1.8, 0), k2 = cyc(2.0, 0.8);
+    person({ x: 252, y: 380, f: 1, glasses: true, lean: 0.08, legF: SIT_F, legB: SIT_B, armF: lerpPose(TABLE, MOUTH, k1), armB: [1.1, 0.35], prop: spoon, laugh: k2 > 0.6, blush: 0.8, bob: -k1 * 2 });
+    person({ x: 548, y: 380, f: -1, hair: true, lean: 0.08, legF: SIT_F, legB: SIT_B, armF: lerpPose(TABLE, MOUTH, k2), armB: [1.1, 0.35], prop: spoon, laugh: k1 > 0.6, blush: 0.8, bob: -k2 * 2 });
+    if (crossed(prev, t, 1.6, 10)) spawn(400, 270, 1);
+  }
+  // plain wipes between the three parts (switch happens while covered)
+  for (const at of [4.6, 9.6]) {
+    const inK = ease((T - at + 0.4) / 0.35), outK = ease((T - at - 0.1) / 0.4);
+    if (inK > 0 && outK < 1) { ctx.fillStyle = INK; ctx.fillRect(lerp(W, 0, inK) - outK * W, 0, W, H); }
+  }
+}
+
+// ---------- scene: thesis at the café, then 175's stomach at the MRT station ----------
+const SUSPECTS = ['好痛喔！我懷疑是拿鐵！！', '腳麻啦！我懷疑是巧克力蛋糕！！', '痛死啦！我懷疑是越南料理！！'];
+const PAIN_START = 5.4, PAIN_CYCLE = 7.2;
+function laptop(x, y, f, t, typing) {
+  ctx.save(); ctx.strokeStyle = INK; ctx.lineWidth = 2;
+  ctx.fillStyle = '#c9d3e0'; ctx.beginPath(); ctx.rect(x - 22, y - 4, 44, 4); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + f * 22, y - 4); ctx.lineTo(x + f * 30, y - 40); ctx.lineTo(x + f * 2, y - 40); ctx.lineTo(x - f * 6, y - 4); ctx.closePath();
+  ctx.fillStyle = '#3a4560'; ctx.fill(); ctx.stroke();
+  // text lines growing on the screen
+  ctx.fillStyle = '#9fd0ff';
+  const n = typing ? Math.floor(t * 3) % 6 + 1 : 3;
+  for (let i = 0; i < n; i++) ctx.fillRect(Math.min(x + f * 6, x + f * 22) + f * i * 0.6, y - 34 + i * 5, 12, 2);
+  ctx.restore();
+}
+function sceneThesis(t, prev) {
+  sceneDone = t > PAIN_START + PAIN_CYCLE * 2 + 6.2;
+  const T = t;
+  if (T < 5) {
+    // café: green sign, menu board, long table, two laptops, two lattes
+    paper();
+    ctx.fillStyle = '#1e6b4a'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.roundRect(280, 30, 240, 64, 32); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = '700 34px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('星巴克', 400, 74);
+    line(60, 412, 740, 412, 2.5);
+    ctx.fillStyle = '#e9d6bd'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.rect(200, 340, 400, 9); ctx.fill(); ctx.stroke();
+    line(220, 349, 220, 412, 3); line(580, 349, 580, 412, 3);
+    for (const x of [372, 482]) { line(x - 16, 382, x + 16, 382, 4); line(x - 10, 382, x - 14, 412, 2.5); line(x + 10, 382, x + 14, 412, 2.5); }
+    laptop(550, 340, 1, t, true);
+    for (const x of [418, 440]) {
+      ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x - 7, 318); ctx.lineTo(x + 7, 318); ctx.lineTo(x + 5, 340); ctx.lineTo(x - 5, 340); ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1e6b4a'; ctx.beginPath(); ctx.arc(x, 329, 3.5, 0, Math.PI * 2); ctx.fill();
+    }
+    const tap = a => [1.15, 0.35 + 0.08 * Math.sin(t * 24 + a)];
+    // 175 writes; 180 sits beside her, chin in hand, watching
+    person({ x: 372, y: 380, f: 1, glasses: true, legF: [1.5, -1.5], legB: [1.42, -1.42], armF: [0.75, 2.3], armB: [1.1, 0.4], lean: 0.12, blush: 0.8 });
+    person({ x: 482, y: 380, f: 1, hair: true, legF: SIT_F, legB: SIT_B, armF: tap(2), armB: tap(3), lean: 0.05 });
+    if (crossed(prev, t, 1.7, 0.8)) spawn(392, 270, 1);
+  } else {
+    // MRT station with a restroom
+    ctx.fillStyle = '#e8edf3'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#cfd8e4'; ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 300); ctx.stroke(); }
+    ctx.fillStyle = '#3d7bd9'; ctx.fillRect(0, 200, W, 14);
+    ctx.fillStyle = '#1b2236'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.rect(150, 40, 230, 56); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = '700 30px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('捷運站', 265, 79);
+    ctx.fillStyle = '#c9d3e0'; ctx.fillRect(0, 300, W, 124); line(0, 300, W, 300, 2.5);
+    ctx.fillStyle = '#ffd34d'; ctx.fillRect(0, 440, W, 10);
+    ctx.fillStyle = '#9aa8c0'; ctx.fillRect(0, 424, W, 16); line(0, 424, W, 424, 2.5);
+    // restroom
+    const DOOR = 650;
+    ctx.fillStyle = '#4aa86b'; ctx.beginPath(); ctx.rect(DOOR - 40, 214, 80, 34); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = '700 22px "LXGW WenKai TC", serif'; ctx.fillText('廁所', DOOR, 239);
+    const c = Math.max(0, T - PAIN_START), cycle = Math.floor(c / PAIN_CYCLE), u = c - cycle * PAIN_CYCLE;
+    const doorOpen = Math.max(clamp((u - 1.9) / 0.2) * (1 - clamp((u - 2.3) / 0.2)), clamp((u - 3.5) / 0.2) * (1 - clamp((u - 3.9) / 0.2)));
+    ctx.fillStyle = '#1b2236'; ctx.fillRect(DOOR - 30, 262, 60, 162);
+    ctx.fillStyle = '#7a9cc6'; ctx.beginPath(); ctx.rect(DOOR - 30, 262, 60 * (1 - doorOpen * 0.85), 162); ctx.fill(); ctx.stroke();
+    if (doorOpen < 0.5) { ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(DOOR + 18, 344, 3, 0, Math.PI * 2); ctx.fill(); }
+    // 180 waits
+    const waiting = u > 2.3 && u < 3.6;
+    person({ x: 300, y: 360, f: 1, glasses: true, armF: [0.3, 0.2], armB: [-0.2, 0.2], legF: waiting ? [0.14 + 0.12 * Math.abs(Math.sin(t * 8)), -0.1] : LEG_F, sad: false });
+    if (waiting) { ctx.fillStyle = INK; ctx.font = '700 22px "LXGW WenKai TC", serif'; ctx.fillText('…', 320, 262); }
+    // 175: stomach ache → run in → come out → name a suspect
+    let x175 = 420, pose = {};
+    const run = clamp((u - 1.2) / 0.7), back = clamp((u - 3.9) / 0.9);
+    if (u < 1.2) pose = { armF: [0.1, 1.4], armB: [0.2, 1.3], sad: true, lean: 0.18, bob: Math.sin(t * 22) * 1.5 };
+    else if (u < 1.9) { const rs = Math.sin(t * 22) * 0.9; x175 = lerp(420, DOOR, ease(run)); pose = { legF: [rs, 0.5], legB: [-rs, 0.5], armF: [0.1, 1.4], armB: [-rs, 1.2], lean: 0.25, sad: true, bob: -Math.abs(Math.sin(t * 22)) * 4 }; }
+    else if (u < 3.6) x175 = null;
+    else if (u < 4.8) { const ws = Math.sin(t * 9) * 0.5; x175 = lerp(DOOR, 420, ease(back)); pose = { f: -1, legF: [ws, 0.15], legB: [-ws, 0.15], armF: [-ws * 0.6, 0.2], armB: [ws * 0.6, 0.2], bob: -Math.abs(Math.sin(t * 9)) * 3, sad: true }; }
+    else pose = { f: -1, armF: [1.0, 2.0], armB: [0.3, 1.5], sad: true };
+    if (x175 !== null) {
+      person({ x: x175, y: 360, f: 1, hair: true, ...pose });
+      if (u < 1.9) { ctx.fillStyle = '#7fb2e8'; ctx.beginPath(); ctx.arc(x175 - 18, 296 + (t * 24) % 16, 4, 0, Math.PI * 2); ctx.fill(); }
+    }
+    if (u >= 4.8) bubble(430, 230, SUSPECTS[cycle % SUSPECTS.length], (u - 4.8) * 4, false);
+  }
+  const at = 5;
+  const inK = ease((T - at + 0.4) / 0.35), outK = ease((T - at - 0.1) / 0.4);
+  if (inK > 0 && outK < 1) { ctx.fillStyle = INK; ctx.fillRect(lerp(W, 0, inK) - outK * W, 0, W, H); }
+}
+
+// ---------- recap: every scene's souvenir goes into the "檢附資料" envelope ----------
+const ATTACH = [
+  { label: () => '壽司七盤', draw: () => { stack(0, 22, 7); sushi(0, -14, PLATES[0]); } },
+  { label: () => '電影一場', draw: () => {
+    ctx.fillStyle = '#ffd34d'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.roundRect(-46, -24, 92, 48, 6); ctx.fill(); ctx.stroke();
+    ctx.setLineDash([4, 4]); line(22, -22, 22, 22, 2); ctx.setLineDash([]);
+    ctx.fillStyle = INK; ctx.font = '700 16px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('電影票', -12, 6);
+  } },
+  { label: () => `投籃機 ${hoop.score} 分`, draw: () => {
+    ctx.fillStyle = '#f08a3c'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(0, 0, 28, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.lineWidth = 2; line(-28, 0, 28, 0, 2); line(0, -28, 0, 28, 2);
+    ctx.beginPath(); ctx.arc(-34, 0, 22, -0.9, 0.9); ctx.stroke();
+    ctx.beginPath(); ctx.arc(34, 0, 22, Math.PI - 0.9, Math.PI + 0.9); ctx.stroke();
+  } },
+  { label: () => '焙茶銀河流沙巧克力裂縫', draw: () => {
+    ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.fillStyle = '#5b3a2a'; ctx.beginPath(); ctx.rect(-36, -10, 72, 34); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#2b2350'; ctx.beginPath(); ctx.ellipse(0, -10, 36, 11, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; for (const [x, y] of [[-18, -12], [8, -6], [20, -13], [-4, -15]]) ctx.fillRect(x, y, 2, 2);
+    ctx.strokeStyle = '#ffb347'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(-10, -18); ctx.lineTo(-2, -10); ctx.lineTo(-8, -4); ctx.lineTo(2, 4); ctx.stroke();
+  } },
+  { label: () => '尿急一次', draw: () => {
+    ctx.fillStyle = '#3d7bd9'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.rect(-22, -30, 44, 58); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-26, -30); ctx.quadraticCurveTo(0, -44, 26, -30); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#7fa8e8'; ctx.beginPath(); ctx.rect(-14, -20, 28, 46); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = '700 13px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('WC', 0, -6);
+  } },
+  { label: () => `主的訊息 ${msgs.total} 則`, draw: () => {
+    ctx.save(); ctx.rotate(-0.08);
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.rect(-30, -34, 60, 68); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#bfe0ff'; ctx.fillRect(-23, -27, 46, 42);
+    heartPath(0, -18, 24); ctx.fillStyle = PINK; ctx.fill();
+    ctx.restore();
+  } },
+  { label: () => '鯛魚燒一份', draw: () => {
+    ctx.fillStyle = '#e2a54a'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(22, 0); ctx.lineTo(42, -16); ctx.lineTo(40, 16); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(-4, 0, 30, 18, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(-20, -5, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.lineWidth = 1.5; for (const x of [-6, 4, 14]) { ctx.beginPath(); ctx.arc(x, 0, 7, -0.9, 0.9); ctx.stroke(); }
+  } },
+  { label: () => '論文一份（希望）', draw: () => {
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.rect(-26, -34, 52, 68); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = INK; ctx.font = '700 15px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('論文', 0, -14);
+    for (let i = 0; i < 4; i++) line(-16, -2 + i * 8, i === 3 ? 4 : 16, -2 + i * 8, 1.5, '#8b97ad');
+  } },
+];
+const RECAP_GAP = 1.0, RECAP_FIRST = 0.6;
+const RECAP_CLOSE = RECAP_FIRST + ATTACH.length * RECAP_GAP + 0.3, RECAP_STAMP = RECAP_CLOSE + 0.8;
+function sceneRecap(t, prev) {
+  sceneDone = t > RECAP_STAMP + 1;
+  paper();
+  line(40, 440, 760, 440, 2.5);
+  const EX = 400, top = 300, bot = 440, L = EX - 120, R = EX + 120;
+  const close = ease((t - RECAP_CLOSE) / 0.5);
+  const flap = (front) => {
+    const apex = lerp(top - 70, top + 75, close);
+    if ((apex > top) !== front) return;
+    ctx.fillStyle = front ? '#d9ae6f' : '#b9894c'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(L, top); ctx.lineTo(EX, apex); ctx.lineTo(R, top); ctx.closePath(); ctx.fill(); ctx.stroke();
+  };
+  // envelope back + open flap
+  ctx.fillStyle = '#c99a5b'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.rect(L, top, R - L, bot - top); ctx.fill(); ctx.stroke();
+  flap(false);
+  // the items, one by one: pop up with a label, then drop into the envelope
+  ATTACH.forEach((it, k) => {
+    const a = t - (RECAP_FIRST + k * RECAP_GAP);
+    if (a < 0 || a > 1.05) return;
+    const fly = ease((a - 0.6) / 0.45);
+    const x = EX + Math.sin(fly * Math.PI) * (k % 2 ? 40 : -40), y = lerp(130, 350, fly * fly);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(fly * (k % 2 ? 0.5 : -0.5));
+    const sc = ease(a / 0.3) * lerp(1.4, 0.7, fly); ctx.scale(sc, sc);
+    it.draw();
+    ctx.restore();
+    if (a < 0.75) {
+      ctx.save(); ctx.globalAlpha = clamp(a / 0.2) * clamp((0.75 - a) / 0.15);
+      ctx.fillStyle = INK; ctx.font = '700 28px "LXGW WenKai TC", serif'; ctx.textAlign = 'center';
+      ctx.fillText(it.label(), EX, 228);
+      ctx.restore();
+    }
+  });
+  // envelope front pocket
+  ctx.fillStyle = '#d9ae6f'; ctx.strokeStyle = INK; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(L, top + 22); ctx.lineTo(R, top + 22); ctx.lineTo(R, bot); ctx.lineTo(L, bot); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = INK; ctx.textAlign = 'center';
+  ctx.font = '700 30px "LXGW WenKai TC", serif'; ctx.fillText('檢附資料', EX, top + 80);
+  ctx.font = '16px "LXGW WenKai TC", serif'; ctx.fillStyle = '#5a4020'; ctx.fillText('180 字第 175 號', EX, top + 108);
+  flap(true);
+  // 收件 stamp
+  const st = (t - RECAP_STAMP) / 0.3;
+  if (st > 0) {
+    const s = lerp(2.2, 1, ease(st));
+    ctx.save(); ctx.translate(R - 34, bot - 40); ctx.rotate(-0.25); ctx.scale(s, s);
+    ctx.globalAlpha = clamp(st * 2) * 0.9; ctx.strokeStyle = '#d23a3a'; ctx.fillStyle = '#d23a3a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, 30, 0, Math.PI * 2); ctx.stroke();
+    ctx.font = '700 22px "LXGW WenKai TC", serif'; ctx.textAlign = 'center'; ctx.fillText('收件', 0, 8);
+    ctx.restore();
+  }
+  if (crossed(prev, t, 999, RECAP_STAMP + 0.3)) spawn(EX, top - 20, 6, 'heart', 2);
+  // the two of them watch from the sides and cheer at the stamp
+  const cheer = t > RECAP_STAMP + 0.3, hop = cheer ? -Math.abs(Math.sin(t * 6)) * 6 : 0;
+  person({ x: 170, y: 376, f: 1, glasses: true, bob: hop, armF: cheer ? [2.7, 0.3] : [0.3, 0.2], armB: cheer ? [2.4, 0.3] : [-0.2, 0.2], blush: cheer ? 1 : 0 });
+  person({ x: 630, y: 376, f: -1, hair: true, bob: cheer ? -Math.abs(Math.sin(t * 6 + 1)) * 6 : 0, armF: cheer ? [2.7, 0.3] : [0.3, 0.2], armB: cheer ? [2.4, 0.3] : [-0.2, 0.2], laugh: cheer });
+}
+
+// ---------- player ----------
+const SCENES = [sceneCover, sceneSushi, sceneMovie, sceneArcade, sceneCake, sceneWalk, sceneSplit, sceneBrunch, sceneNews, sceneThesis, sceneRecap, null];
+const ENDING = SCENES.length - 1;
+let idx = 0, start = performance.now(), last = start, prevT = 0;
+let sceneT = 0;
+const $ = id => document.getElementById(id);
+const dots = $('dots');
+SCENES.forEach(() => dots.appendChild(document.createElement('span')));
+
+function show(i) {
+  idx = clamp(i, 0, SCENES.length - 1);
+  start = performance.now(); prevT = 0; parts = [];
+  [...dots.children].forEach((d, k) => d.classList.toggle('on', k === idx));
+  $('prev').disabled = idx === 0;
+  $('next').disabled = idx === ENDING;
+  c.hidden = idx === ENDING; $('form').hidden = idx !== ENDING;
+  if (!c.hidden) resize();
+  meal.count = 0; meal.eatAt = -99;
+  const sc = SCENES[idx];
+  $('act').hidden = ![sceneSushi, sceneArcade, sceneWalk].includes(sc);
+  $('eat').hidden = sc !== sceneSushi; $('shoot').hidden = sc !== sceneArcade; $('walk').hidden = sc !== sceneWalk;
+  walk.count = 0; walk.at = -99; hoop.visit = 0; $('walk').disabled = false;
+  SHOOTERS.forEach(sh => sh.at = -99);
+  updateEat(); updateShoot();
+  $('hoopScore').textContent = hoop.score;
+  msgs.total += msgs.thisVisit; msgs.thisVisit = 0;
+  $('msgCount').textContent = msgs.total;
+  if (idx === ENDING && !$('epi').hidden) epilogue();
+}
+
+function updateShoot() {
+  $('shoot').textContent = '投一球 🏀';
+}
+$('shoot').onclick = () => {
+  const sh = SHOOTERS[hoop.turn % 2];
+  if (sceneT - sh.at < SHOT * 0.9) return; // still mid-throw
+  sh.at = sceneT; hoop.turn++; hoop.visit++; hoop.score += 2;
+  updateShoot();
+};
+function updateEat() {
+  const b = $('eat');
+  b.disabled = meal.count >= SUSHI_MAX;
+  b.textContent = meal.count >= SUSHI_MAX ? '吃不下了 😵' : `吃下一盤 🍣（${meal.count}）`;
+}
+$('eat').onclick = () => {
+  if (meal.count >= SUSHI_MAX || sceneT - meal.eatAt < EAT_TIME) return;
+  meal.count++; meal.eatAt = sceneT;
+  updateEat();
+};
+
+// "(結束)" card shown once a scene has played out; the scene keeps animating
+let sceneDone = false, doneSince = null;
+function endCard(k) {
+  ctx.save(); ctx.globalAlpha = k;
+  ctx.fillStyle = 'rgba(27,34,54,.85)'; ctx.beginPath(); ctx.roundRect(270, 432, 260, 60, 14); ctx.fill();
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#f7f9fc'; ctx.font = '700 24px "LXGW WenKai TC", serif'; ctx.fillText('（結束）', 400, 458);
+  ctx.fillStyle = '#c9d3e0'; ctx.font = '15px "LXGW WenKai TC", serif'; ctx.fillText('按「下一幕」繼續 →', 400, 481);
+  ctx.restore();
+}
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, 0.05); last = now;
+  const t = sceneT = (now - start) / 1000;
+  sceneDone = false;
+  if (SCENES[idx]) { ctx.save(); SCENES[idx](t, prevT, dt); drawParts(dt); ctx.restore(); }
+  if (sceneDone) { if (doneSince === null) doneSince = t; endCard(ease((t - doneSince) / 0.6)); } else doneSince = null;
+  $('next').classList.toggle('pulse', sceneDone);
+  prevT = t;
+  requestAnimationFrame(frame);
+}
+
+// ---------- ending: approve / reject ----------
+{
+  const d = new Date();
+  $('date').textContent = `中華民國 ${d.getFullYear() - 1911} 年 ${d.getMonth() + 1} 月 ${d.getDate()} 日`;
+}
+let rejects = 0, approved = false;
+function approve() {
+  if (approved) return; approved = true;
+  setTimeout(sendMail, 2600);
+  $('decide').hidden = true; $('result').hidden = false;
+  const st = $('stamp'); st.hidden = false; st.classList.remove('in'); void st.offsetWidth; st.classList.add('in');
+  const form = $('form');
+  for (let i = 0; i < 40; i++) {
+    const h = document.createElement('span');
+    h.className = 'fly'; h.textContent = '♥';
+    h.style.left = Math.random() * 100 + '%';
+    h.style.fontSize = 16 + Math.random() * 26 + 'px';
+    h.style.animationDelay = Math.random() * 1.2 + 's';
+    h.style.setProperty('--dx', (Math.random() - 0.5) * 160 + 'px');
+    h.style.setProperty('--r', (Math.random() - 0.5) * 90 + 'deg');
+    form.appendChild(h);
+    h.addEventListener('animationend', () => h.remove());
+  }
+}
+$('yes').onclick = approve;
+
+// fake delivery to 180's inbox → the reveal → "to be continued"
+const later = ms => new Promise(r => setTimeout(r, ms));
+async function sendMail() {
+  const mail = $('mail'), bar = $('mailBar').firstElementChild;
+  // pin the stamp where it is, so the growing form doesn't drag it down
+  const st = $('stamp'); st.style.top = st.offsetTop + 'px'; st.style.bottom = 'auto';
+  mail.hidden = false; mail.classList.add('appear');
+  mail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  await later(50); bar.style.width = '99%';
+  await later(3400); bar.style.transition = 'width .3s'; bar.style.width = '100%';
+  await later(400);
+  const d = new Date(), p2 = n => String(n).padStart(2, '0');
+  $('mailStatus').textContent = '✓ 已送達 180 信箱'; $('mailStatus').classList.add('ok');
+  $('mailWhen').textContent = `送達時間：中華民國 ${d.getFullYear() - 1911} 年 ${d.getMonth() + 1} 月 ${d.getDate()} 日 ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+  $('mailWhen').hidden = false;
+  await later(2000);
+  $('mailFine').hidden = false;
+  await later(1800);
+  $('epi').hidden = false; epilogue();
+  mail.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+let epiRunning = false;
+function epilogue() {
+  if (epiRunning) return; epiRunning = true;
+  const cv = $('epi'), ctx2 = cv.getContext('2d'), EH = 220, t0 = performance.now();
+  const loop = now => {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    if (cv.width !== Math.round(cv.clientWidth * dpr)) { cv.width = Math.round(cv.clientWidth * dpr); cv.height = Math.round(cv.clientWidth * EH / W * dpr); }
+    ctx2.setTransform(cv.width / W, 0, 0, cv.height / EH, 0, 0);
+    const main = ctx; ctx = ctx2;
+    const t = (now - t0) / 1000, sw = Math.sin(t * 6) * 0.45, bob = -Math.abs(Math.sin(t * 6)) * 3;
+    ctx.fillStyle = PAPER; ctx.fillRect(0, 0, W, EH);
+    // the ground scrolls by, so they keep walking together
+    line(0, 196, W, 196, 2.5);
+    for (let x = -((t * 60) % 46); x < W; x += 46) { line(x, 196, x - 4, 188, 1.5); line(x + 6, 196, x + 8, 189, 1.5); }
+    const walkPose = k => ({ legF: [sw * k, 0.15], legB: [-sw * k, 0.15], bob });
+    person({ x: 361, y: 150, s: 0.68, f: 1, glasses: true, ...walkPose(1), armF: [0.75, 0.1], armB: [-sw * 0.6, 0.2] });
+    person({ x: 409, y: 150, s: 0.68, f: 1, hair: true, ...walkPose(-1), armB: [-0.75, -0.1], armF: [sw * 0.6, 0.2] });
+    const hb = 1 + 0.12 * Math.sin(t * 5);
+    heartPath(385, 70 - 10 * hb, 22 * hb); ctx.fillStyle = PINK; ctx.fill();
+    ctx = main;
+    if (!$('form').hidden) requestAnimationFrame(loop);
+    else { epiRunning = false; cv.width = 0; }
+  };
+  requestAnimationFrame(loop);
+}
+$('no').onclick = () => {
+  const b = $('no');
+  if (b.classList.contains('approve')) return approve();
+  // the first two presses do nothing; the third turns it into 核准
+  if (++rejects >= 3) { b.textContent = '核准'; b.classList.add('approve'); }
+};
+
+$('prev').onclick = () => show(idx - 1);
+$('next').onclick = () => show(idx + 1);
+c.onclick = () => {
+  const sc = SCENES[idx];
+  if (sc === sceneSushi && meal.count < SUSHI_MAX) $('eat').click();
+  else if (sc === sceneArcade) $('shoot').click();
+  else if (sc === sceneWalk && walk.count < WALK_MAX) $('walk').click();
+  else if (idx < ENDING) show(idx + 1);
+};
+$('walk').onclick = () => {
+  if (walk.count >= WALK_MAX || sceneT - walk.at < WALK_TIME) return;
+  walk.count++; walk.at = sceneT;
+  if (walk.count >= WALK_MAX) $('walk').disabled = true;
+};
+addEventListener('keydown', e => { if (e.key === 'ArrowRight') show(idx + 1); if (e.key === 'ArrowLeft') show(idx - 1); });
+
+resize(); show(0); requestAnimationFrame(frame);
+</script>
+
+</body>
+</html>
